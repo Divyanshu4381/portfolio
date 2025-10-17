@@ -65,17 +65,17 @@ export default function AboutSection() {
             className="order-2 lg:order-1"
           >
             <motion.h3
-              className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6"
+              className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-4 sm:mb-6"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
               viewport={{ once: true }}
             >
-              I'm Divyanshu Kushwaha
+              I'm <span className="text-green-400">Divyanshu Kushwaha</span>
             </motion.h3>
 
             <motion.p
-              className="text-gray-300 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6"
+              className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed sm:leading-loose mb-4 sm:mb-6 break-words max-w-full"
               variants={textVariants}
               initial="hidden"
               whileInView="visible"
@@ -90,9 +90,9 @@ export default function AboutSection() {
             </motion.p>
 
             {/* Contact Info - Stack on mobile */}
-            <div className="space-y-2 sm:space-y-3 mb-6">
+            <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
               <motion.p
-                className="text-gray-300 text-base sm:text-lg leading-relaxed"
+                className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed break-words"
                 variants={textVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -103,7 +103,7 @@ export default function AboutSection() {
               </motion.p>
 
               <motion.p
-                className="text-gray-300 text-base sm:text-lg leading-relaxed"
+                className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed"
                 variants={textVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -114,7 +114,7 @@ export default function AboutSection() {
               </motion.p>
 
               <motion.p
-                className="text-gray-300 text-base sm:text-lg leading-relaxed"
+                className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed break-words"
                 variants={textVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -135,8 +135,12 @@ export default function AboutSection() {
               whileTap={{ scale: 0.98 }}
               className="flex justify-center lg:justify-start"
             >
-              <a href="/Divyanshu_FullStackDeveloper_Resume.pdf" download>
-                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-black px-6 py-2 sm:px-8 sm:py-3 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base w-full sm:w-auto">
+              <a 
+                href="/Divyanshu_FullStackDeveloper_Resume.pdf" 
+                download
+                className="w-full sm:w-auto"
+              >
+                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-black px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base w-full sm:w-auto shadow-lg hover:shadow-green-500/20">
                   Download Resume
                 </Button>
               </a>
@@ -151,20 +155,21 @@ export default function AboutSection() {
             viewport={{ once: true }}
             className="flex justify-center relative z-20 order-1 lg:order-2 mb-8 lg:mb-0"
           >
-            <div className="relative w-[280px] h-[320px] sm:w-[320px] sm:h-[380px] md:w-[350px] md:h-[420px] lg:w-[400px] lg:h-[460px] rounded-2xl sm:rounded-3xl overflow-hidden border border-green-500/20 shadow-lg shadow-green-500/10">
+            <div className="relative w-[280px] h-[320px] sm:w-[320px] sm:h-[380px] md:w-[350px] md:h-[420px] lg:w-[380px] lg:h-[440px] xl:w-[400px] xl:h-[460px] rounded-2xl sm:rounded-3xl overflow-hidden border border-green-500/20 shadow-lg shadow-green-500/10 hover:shadow-green-500/30 transition-all duration-500">
               <Image
                 src="/aboutPhoto.jpg"
-                alt="Divyanshu Kushwaha"
+                alt="Divyanshu Kushwaha - Full Stack Developer from Kanpur"
                 fill
                 className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
                 priority
+                sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 350px, 400px"
               />
             </div>
           </motion.div>
         </div>
 
         {/* Stats Section - Responsive grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-12 sm:mt-16">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mt-12 sm:mt-16">
           {stats.map((stat, index) => (
             <motion.div
               key={index}
@@ -207,7 +212,7 @@ export default function AboutSection() {
               </motion.div>
 
               <motion.div
-                className="text-gray-400 text-xs sm:text-sm"
+                className="text-gray-400 text-xs sm:text-sm leading-tight"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.15 + 0.7 }}
