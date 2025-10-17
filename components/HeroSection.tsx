@@ -21,11 +21,11 @@ export default function HeroSection() {
     >
       {/* 🎬 Background Video */}
       <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           className="w-full h-full object-cover opacity-40"
         >
           <source src="/videobg.mp4" type="video/mp4" />
@@ -87,7 +87,7 @@ export default function HeroSection() {
 
             {/* Description - Responsive text sizing and spacing */}
             <motion.p
-              className="text-gray-300 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4 sm:px-6"
+              className="text-gray-300 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed sm:leading-loose px-4 sm:px-6 break-words"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -105,15 +105,15 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <a 
-                href="https://drive.google.com/file/d/1yswFN_228XF_u6g4PR0sfFsvcNw9IYSm/view?usp=sharing" 
-                target="_blank" 
+              <a
+                href="https://drive.google.com/file/d/1yswFN_228XF_u6g4PR0sfFsvcNw9IYSm/view?usp=sharing"
+                target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto max-w-xs mx-auto"
               >
-                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-black px-6 py-2 sm:px-8 sm:py-3 rounded-lg font-semibold shadow-lg relative overflow-hidden group w-full sm:w-auto">
+                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-black px-6 py-2 sm:px-8 sm:py-3 rounded-lg font-semibold shadow-lg relative overflow-hidden group w-full">
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-green-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="relative z-10 flex items-center justify-center">
+                  <span className="relative z-10 flex items-center justify-center text-sm sm:text-base">
                     View Resume <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                   </span>
                 </Button>
@@ -127,23 +127,23 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <a 
-                href="https://github.com/Divyanshu4381" 
-                target="_blank" 
+              <a
+                href="https://github.com/Divyanshu4381"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full hover:bg-green-500/10 transition-colors duration-300"
               >
                 <Github className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300 hover:text-green-400 transition" />
               </a>
-              <a 
-                href="https://linkedin.com/in/divyanshukushwaha" 
-                target="_blank" 
+              <a
+                href="https://linkedin.com/in/divyanshukushwaha"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full hover:bg-green-500/10 transition-colors duration-300"
               >
                 <Linkedin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300 hover:text-green-400 transition" />
               </a>
-              <a 
+              <a
                 href="mailto:divyanshu4381@gmail.com"
                 className="p-2 rounded-full hover:bg-green-500/10 transition-colors duration-300"
               >
