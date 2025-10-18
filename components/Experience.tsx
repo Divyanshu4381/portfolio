@@ -40,7 +40,7 @@ const Experience = () => {
     {
       company: "Web Soft Segment",
       position: "Freelancer | Mern Stack Developer | PHP Developer | Laravel",
-      period: "May 2025 - Aug 2025",
+      period: "Jan 2024 - April 2025",
       Location: "Remote"
     },
   ];
