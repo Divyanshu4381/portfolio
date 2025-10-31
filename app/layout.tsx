@@ -126,59 +126,31 @@ description: "Divyanshu Kushwaha - MERN Stack Developer from Kanpur & Allenhouse
 
 // Structured Data for better SEO
 const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Divyanshu Kushwaha',
-  url: 'https://divyanshubca.vercel.app/',
-  image: '/aboutPhoto.jpg',
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://divyanshubca.vercel.app/#person",
+  name: "Divyanshu Kushwaha",
+  url: "https://divyanshubca.vercel.app/",
+  image: "/aboutPhoto.jpg",
   sameAs: [
-    'https://github.com/Divyanshu4381',
-    'https://www.linkedin.com/in/divyanshukushwaha',
-    'https://x.com/Divyanshuk4381',
-    'https://www.instagram.com/itzs_divyanshu/',
-    'https://www.facebook.com/divyanshu.kushwaha.3958'
+    "https://github.com/Divyanshu4381",
+    "https://www.linkedin.com/in/divyanshukushwaha",
+    "https://x.com/Divyanshuk4381",
+    "https://www.instagram.com/itzs_divyanshu/",
+    "https://www.facebook.com/divyanshu.kushwaha.3958"
   ],
-  jobTitle: 'MERN Stack Developer',
+  jobTitle: "MERN Stack Developer",
   worksFor: {
-    '@type': 'Organization',
-    name: 'Freelance',
+    "@type": "Organization",
+    name: "Freelance"
   },
   knowsAbout: [
-    'MERN Stack',
-    'React.js',
-    'Node.js',
-    'MongoDB',
-    'Express.js',
-    'JavaScript',
-    'TypeScript',
-    'Next.js',
-    'React Native',
-    'Tailwind CSS',
-    'RESTful APIs',
-    'Database Design',
-    'Web Development',
-    'ERP Systems',
-    'Full Stack Development',
-     "Allenhouse Institute of Technology",
-  "Allenhouse Kanpur",
-  "Allenhouse student developer", 
-  "Kanpur software engineer",
-  "Kanpur web developer",
-  "Allenhouse web developer",
-  "Kanpur MERN stack developer",
-  "Allenhouse MERN developer",
-  "Divyanshu Kushwaha Allenhouse",
-  "Software developer Kanpur UP",
-  "Best developer in Kanpur",
-  "Top web developer Kanpur",
-  "Freelance developer Kanpur",
-  "Hire developer Kanpur",
-  "Website developer Kanpur",
-  "Web development company Kanpur",
-  "Kanpur IT services",
-  "UP software developer"
+    "MERN Stack", "React.js", "Node.js", "MongoDB", "Express.js",
+    "JavaScript", "TypeScript", "Next.js", "React Native",
+    "Web Development", "ERP Systems", "Full Stack Development"
   ],
-description: "Divyanshu Kushwaha - MERN Stack Developer from Kanpur & Allenhouse Institute of Technology. Professional Full Stack Developer specializing in React.js, Node.js, MongoDB. Building scalable web applications, ERP systems for clients in Kanpur and worldwide.",}
+  description: "Divyanshu Kushwaha - MERN Stack Developer from Kanpur & Allenhouse Institute of Technology. Specializing in React.js, Node.js, and MongoDB."
+}
 
 export default function RootLayout({
   children,
