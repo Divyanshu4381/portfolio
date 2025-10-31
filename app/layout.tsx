@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
  title: {
-  default: "Divyanshu Kushwaha - MERN Stack Developer from Kanpur | Allenhouse | Full Stack Engineer",
+  default: "Divyanshu Kushwaha | Full Stack MERN Developer | Kanpur",
   template: "%s | Divyanshu Kushwaha - Allenhouse Developer"
 },
 description: "Divyanshu Kushwaha - MERN Stack Developer from Kanpur & Allenhouse Institute of Technology. Professional Full Stack Developer specializing in React.js, Node.js, MongoDB. Building scalable web applications, ERP systems for clients in Kanpur and worldwide.",
