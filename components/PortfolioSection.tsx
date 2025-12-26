@@ -116,6 +116,26 @@ const projectsData = [
     duration: "5 Months",
     team: "3 Members"
   },
+  {
+    image: '/images/sarkarisuvidha.png',
+    title: `SARKARI SUVIDHA`,
+    description: `Sarkari Suvidha is the protal to helps to people to find government job openings.`,
+    technologies: [
+      'Next.js',
+      'Shadcn UI',
+      'Tailwind CSS',
+      'nodemailer',
+      'MongoDB',
+      'TypeScript',
+    ],
+    links: {
+      preview: 'https://sarkarisuvidha.vercel.app/',
+      github: 'https://github.com/Divyanshu4381',
+    },
+    category: "web",
+    duration: "1 Months",
+    team: "Self"
+  },
 ] as const;
 
 interface Project {
