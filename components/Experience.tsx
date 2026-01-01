@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from 'react';
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform, easeOut, backOut } from 'framer-motion';
 
 interface ExperienceItem {
   company: string;
@@ -68,7 +68,7 @@ const Experience = () => {
       scale: 1,
       transition: {
         duration: 0.8,
-        ease: "easeOut"
+        ease: easeOut
       }
     }
   };
@@ -79,7 +79,7 @@ const Experience = () => {
       scaleY: 1,
       transition: {
         duration: 1.2,
-        ease: "easeOut"
+        ease: easeOut
       }
     }
   };
@@ -91,7 +91,7 @@ const Experience = () => {
       rotate: 0,
       transition: {
         duration: 0.6,
-        ease: "backOut"
+        ease: backOut
       }
     }
   };
@@ -182,7 +182,7 @@ const Experience = () => {
                     transition={{ 
                       duration: 0.7, 
                       delay: index * 0.15,
-                      ease: "easeOut"
+                      ease: easeOut
                     }}
                     whileHover={{ 
                       y: -4,

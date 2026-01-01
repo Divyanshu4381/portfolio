@@ -68,7 +68,7 @@ export default function AboutSection() {
               className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-4 sm:mb-6"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: easeOut }}
               viewport={{ once: true }}
             >
               I'm <span className="text-green-400">Divyanshu Kushwaha</span>
@@ -129,7 +129,7 @@ export default function AboutSection() {
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              transition={{ duration: 0.6, delay: 0.3, ease: easeOut }}
               viewport={{ once: true }}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
@@ -176,7 +176,7 @@ export default function AboutSection() {
               className="bg-gray-900/50 backdrop-blur-sm border border-green-500/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:bg-gray-800/50 transition-all duration-500 group"
               initial={{ opacity: 0, y: 30, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.15, ease: 'easeOut' }}
+              transition={{ duration: 0.6, delay: index * 0.15, ease: easeOut }}
               viewport={{ once: true }}
               whileHover={{ y: -6, scale: 1.02 }}
             >
@@ -187,7 +187,7 @@ export default function AboutSection() {
                 transition={{
                   duration: 0.8,
                   delay: index * 0.15 + 0.3,
-                  ease: 'easeOut',
+                  ease: easeOut,
                 }}
                 viewport={{ once: true }}
                 whileHover={{ rotate: 5, scale: 1.1 }}

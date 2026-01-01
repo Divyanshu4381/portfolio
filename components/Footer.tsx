@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, backOut } from "framer-motion"
 import {
   MapPin,
   Phone,
@@ -89,7 +89,7 @@ export default function Footer() {
               className="w-40 sm:w-48 md:w-52 mx-auto md:mx-0"
               initial={{ scale: 0.8, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: "backOut" }}
+              transition={{ duration: 0.8, ease: backOut }}
             />
             <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
               Thank you for visiting my portfolio website. Connect with me over socials.

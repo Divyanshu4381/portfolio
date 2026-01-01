@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+import { motion, easeInOut } from "framer-motion"
 import { ArrowRight, Sparkles, Github, Linkedin, Mail } from "lucide-react"
 import { useState, useEffect } from "react"
 import useEmblaCarousel from "embla-carousel-react"
@@ -49,7 +49,7 @@ export default function HeroSection() {
             <motion.div
               className="absolute -top-6 -left-6 sm:-top-10 sm:-left-10"
               animate={{ y: [0, -20, 0], rotate: [0, 180, 360] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 4, repeat: Infinity, ease: easeInOut }}
             >
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-green-400/60" />
             </motion.div>
