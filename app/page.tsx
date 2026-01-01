@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Head from "next/head"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, easeInOut, easeOut } from "framer-motion"
 import Navbar from "@/components/Navbar"
 import HeroSection from "@/components/HeroSection"
 import AboutSection from "@/components/AboutSection"
@@ -151,13 +151,13 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
+              transition={{ duration: 0.8, ease: easeInOut }}
               className="fixed inset-0 bg-black flex items-center justify-center z-50"
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: easeOut }}
                 className="text-center"
               >
                 <div className="w-40 h-28 bg-black rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-2xl border border-green-500/20">
