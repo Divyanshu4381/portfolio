@@ -53,7 +53,7 @@ export default function Home() {
 
     gsap.utils.toArray(".scroll-animate").forEach((element, index) => {
       gsap.fromTo(
-        element,
+        element as HTMLElement,
         { opacity: 0, y: 50, rotationX: 10 },
         {
           opacity: 1,
@@ -62,7 +62,7 @@ export default function Home() {
           duration: 1,
           delay: index * 0.1,
           scrollTrigger: {
-            trigger: element,
+            trigger: element as HTMLElement,
             start: "top 80%",
             end: "bottom 20%",
             toggleActions: "play none none reverse",
