@@ -39,11 +39,11 @@ export default function Home() {
     })
 
     gsap.utils.toArray(".parallax-element").forEach((element) => {
-      gsap.to(element, {
+      gsap.to(element as HTMLElement, {
         yPercent: -50,
         ease: "none",
         scrollTrigger: {
-          trigger: element,
+          trigger: element as HTMLElement,
           start: "top bottom",
           end: "bottom top",
           scrub: true,
