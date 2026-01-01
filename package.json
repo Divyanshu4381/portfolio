@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "postbuild": "next-sitemap",
-    "vercel-build": "TURBOPACK=0 next build"
+    "vercel-build": "next build"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -51,13 +51,13 @@
     "gsap": "latest",
     "input-otp": "latest",
     "lucide-react": "^0.454.0",
-    "next": "^16.1.1",
+    "next": "15.1.6",
     "next-sitemap": "^4.2.3",
     "next-themes": "latest",
     "nodemailer": "^7.0.7",
-    "react": "^19",
+    "react": "^18.3.1",
     "react-day-picker": "latest",
-    "react-dom": "^19",
+    "react-dom": "^18.3.1",
     "react-hook-form": "latest",
     "react-icons": "^5.5.0",
     "react-resizable-panels": "latest",
@@ -70,8 +70,8 @@
   },
   "devDependencies": {
     "@types/node": "^22",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
