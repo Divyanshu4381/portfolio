@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "postbuild": "next-sitemap",
-    "vercel-build": "next build"
+    "vercel-build": "TURBOPACK=0 next build"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
