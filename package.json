@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev --no-turbo",
-  "build": "next build",
-  "start": "next start",
-  "postbuild": "next-sitemap",
-  "vercel-build": "next build"
-},
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "postbuild": "next-sitemap",
+    "vercel-build": "next build"
+  },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.9.1",
