@@ -12,7 +12,7 @@ interface ExperienceItem {
 
 const Experience = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: false, threshold: 0.1 });
+  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
