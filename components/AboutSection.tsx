@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, easeOut } from "framer-motion";
 import { Code2, Laptop, CheckCircle, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -19,7 +19,7 @@ export default function AboutSection() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+      transition: { duration: 0.8, ease: easeOut },
     },
   };
 
