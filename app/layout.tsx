@@ -2,6 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/react";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
@@ -138,10 +141,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preload critical resources */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-
         {/* Favicon - Multiple formats for maximum compatibility */}
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -168,7 +167,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Divyanshu Portfolio" />
       </head>
-      <body className="antialiased">
+      <body className={`${inter.className} antialiased`}>
         {children}
 
         {/* Performance monitoring script can be added here */}
