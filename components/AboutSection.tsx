@@ -135,8 +135,10 @@ export default function AboutSection() {
               whileTap={{ scale: 0.98 }}
               className="flex justify-center lg:justify-start"
             >
-              <a 
-                href="/Divyanshu_FullStackDeveloper_Resume.pdf" 
+              <a
+                href="https://drive.google.com/file/d/1M0PmBbeqkHkvF_VSw4NmNKFa2Ltnb2zz/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
                 download
                 className="w-full sm:w-auto"
               >
