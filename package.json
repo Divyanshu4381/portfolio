@@ -48,7 +48,6 @@
     "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "latest",
-    "gsap": "latest",
     "input-otp": "latest",
     "lucide-react": "^0.454.0",
     "next": "^15.5.9",

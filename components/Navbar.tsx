@@ -1,15 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Phone, ChevronDown } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-
-gsap.registerPlugin(ScrollTrigger)
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,6 +13,15 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("Home")
   const router = useRouter()
   const pathname = usePathname()
+  const { scrollY } = useScroll()
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    if (latest > 50) {
+      setIsScrolled(true)
+    } else {
+      setIsScrolled(false)
+    }
+  })
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -27,50 +32,6 @@ export default function Navbar() {
     { name: "Experience", href: "#experience" },
     { name: "Certificates", href: "#certificates" },
   ]
-
-  useEffect(() => {
-    gsap.fromTo(".navbar", { y: -100, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.1, ease: "power3.out" })
-
-    gsap.fromTo(
-      ".nav-item",
-      { y: -30, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.3,
-        stagger: 0.05,
-        delay: 0.4,
-        ease: "power2.out",
-      },
-    )
-
-    gsap.fromTo(
-      ".cta-button",
-      { scale: 0, rotation: 360 },
-      { scale: 1, rotation: 0, duration: 0.5, delay: 0.6, ease: "elastic.out(1, 0.5)" },
-    )
-
-    let lastScrollY = 0
-    ScrollTrigger.create({
-      start: "top -80",
-      end: 99999,
-      onUpdate: (self) => {
-        const currentScrollY = self.scroll()
-
-        if (self.direction === 1) {
-          setIsScrolled(true)
-        } else if (self.progress < 0.1) {
-          setIsScrolled(false)
-        }
-
-        lastScrollY = currentScrollY
-      },
-    })
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-    }
-  }, [])
 
   const handleNavClick = (href: string, name: string) => {
     setIsOpen(false)
@@ -102,20 +63,23 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`navbar fixed top-3 sm:top-4 md:top-5 left-0 right-0 z-50 transition-all duration-300 mx-4 sm:mx-6 md:mx-8 lg:mx-10 ${
-        isScrolled
+      transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+      className={`navbar fixed top-3 sm:top-4 md:top-5 left-0 right-0 z-50 transition-all duration-300 mx-4 sm:mx-6 md:mx-8 lg:mx-10 ${isScrolled
           ? "bg-black/80 backdrop-blur-xl border border-green-500/30 shadow-2xl shadow-green-500/20 rounded-2xl lg:rounded-full"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="container mx-auto px-4 sm:px-5 md:px-6">
         <div className="flex items-center justify-center h-14 sm:h-16">
-          
+
           {/* Desktop Navigation - Centered */}
           <div className="hidden lg:flex items-center space-x-1">
             {navItems.map((item, index) => (
               <div key={item.name} className="relative">
-                <button
+                <motion.button
+                  initial={{ y: -30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.4 + index * 0.05, ease: "easeOut" }}
                   className="nav-item relative text-gray-300 hover:text-white transition-colors duration-200 font-medium px-4 py-2 rounded-full text-base"
                   onClick={() => handleNavClick(item.href, item.name)}
                 >
@@ -131,21 +95,27 @@ export default function Navbar() {
                       }}
                     />
                   )}
-                </button>
+                </motion.button>
               </div>
             ))}
 
             {/* CTA Button */}
-            <Button 
-              className="cta-button bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-2 rounded-full font-semibold shadow-lg shadow-green-500/25 relative overflow-hidden group ml-4"
-              onClick={() => scrollToSection("#contact")}
+            <motion.div
+              initial={{ scale: 0, rotate: 360 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 0.5, delay: 0.6, type: "spring", stiffness: 200, damping: 15 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-              <div className="relative flex items-center space-x-2">
-                <Phone className="w-4 h-4" />
-                <span>Contact Us</span>
-              </div>
-            </Button>
+              <Button
+                className="cta-button bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-2 rounded-full font-semibold shadow-lg shadow-green-500/25 relative overflow-hidden group ml-4"
+                onClick={() => scrollToSection("#contact")}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                <div className="relative flex items-center space-x-2">
+                  <Phone className="w-4 h-4" />
+                  <span>Contact Us</span>
+                </div>
+              </Button>
+            </motion.div>
           </div>
 
           {/* Mobile Menu Button - Centered */}
@@ -176,11 +146,10 @@ export default function Navbar() {
                 {navItems.map((item) => (
                   <div key={item.name}>
                     <button
-                      className={`block w-full text-left px-4 py-3 transition-all duration-200 rounded-lg mx-2 text-base ${
-                        item.name === activeSection
+                      className={`block w-full text-left px-4 py-3 transition-all duration-200 rounded-lg mx-2 text-base ${item.name === activeSection
                           ? "text-white bg-green-500/20 border border-green-500/30"
                           : "text-gray-300 hover:text-white hover:bg-green-500/10"
-                      }`}
+                        }`}
                       onClick={() => handleNavClick(item.href, item.name)}
                     >
                       {item.name}
