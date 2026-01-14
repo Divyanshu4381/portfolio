@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Head from "next/head"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { AnimatePresence, motion, easeInOut, easeOut } from "framer-motion"
@@ -80,69 +79,6 @@ export default function Home() {
   return (
     <>
       {/* 🔍 SEO + Meta Tags */}
-      <Head>
-        {/* Basic SEO */}
-        <title>Divyanshu Kushwaha | Web Developer Portfolio</title>
-        <meta
-          name="description"
-          content="Hi, I'm Divyanshu Kushwaha — a passionate web developer creating modern, fast, and visually stunning websites using React, Next.js, and Node.js."
-        />
-        <meta
-          name="keywords"
-          content="Divyanshu Kushwaha, Web Developer, Frontend Developer, Next.js, React.js, Node.js, Portfolio, Freelancer, Full Stack Developer"
-        />
-        <meta name="author" content="Divyanshu Kushwaha" />
-
-        {/* Canonical */}
-        <link rel="canonical" href="https://divyanshubca.vercel.app/" />
-
-        {/* Open Graph (Facebook / LinkedIn / WhatsApp Preview) */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://divyanshubca.vercel.app/" />
-        <meta property="og:title" content="Divyanshu Kushwaha | Web Developer Portfolio" />
-        <meta
-          property="og:description"
-          content="Explore the portfolio of Divyanshu Kushwaha — showcasing modern web development projects built with React and Next.js."
-        />
-        <meta property="og:image" content="https://divyanshubca.vercel.app/og-image.jpg" />
-
-        {/* Twitter Card (Preview for Twitter / X) */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Divyanshu Kushwaha | Web Developer Portfolio" />
-        <meta
-          name="twitter:description"
-          content="Hi, I'm Divyanshu Kushwaha — crafting elegant, scalable, and modern web experiences."
-        />
-        <meta name="twitter:image" content="https://divyanshubca.vercel.app/og-image.jpg" />
-
-        {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" />
-
-        {/* JSON-LD Schema for Google Rich Results */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-              name: "Divyanshu Kushwaha",
-              url: "https://divyanshubca.vercel.app/",
-              sameAs: [
-                "https://github.com/Divyanshu4381",
-                "https://linkedin.com/in/divyanshukushwaha",
-                "mailto:divyanshu4381@gmail.com",
-              ],
-              jobTitle: "Full Stack Web Developer",
-              worksFor: {
-                "@type": "Organization",
-                name: "Freelancer",
-              },
-              description:
-                "Creative and detail-oriented web developer specializing in React, Next.js, and Node.js with a focus on performance and design.",
-            }),
-          }}
-        />
-      </Head>
 
       {/* 🌟 Main Page Content */}
       <div className="bg-black min-h-screen text-white">

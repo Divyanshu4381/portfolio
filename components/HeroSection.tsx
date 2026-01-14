@@ -64,6 +64,7 @@ export default function HeroSection() {
               <Avatar className="w-full h-full border-2 border-green-500/30">
                 <AvatarImage
                   src="/DivyanshuKushwaha_photo.png"
+                  alt="Divyanshu Kushwaha"
                   className="object-cover filter grayscale hover:grayscale-0 transition duration-300"
                 />
                 <AvatarFallback>DK</AvatarFallback>
