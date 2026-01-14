@@ -8,7 +8,11 @@ import useEmblaCarousel from "embla-carousel-react"
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  city?: string;
+}
+
+export default function HeroSection({ city }: HeroSectionProps) {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [isHovering, setIsHovering] = useState(false)
 
@@ -94,7 +98,7 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Passionate about crafting scalable, secure, and intuitive web solutions using{" "}
+              Passionate about crafting scalable, secure, and intuitive web solutions {city ? `for businesses in ${city} ` : ""}using{" "}
               <span className="text-green-400 font-semibold">React</span>,{" "}
               <span className="text-green-400 font-semibold">Node.js</span>, and{" "}
               <span className="text-green-400 font-semibold">Next.js</span>. I love transforming ideas into smooth, high-performing digital experiences.
