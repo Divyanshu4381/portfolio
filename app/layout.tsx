@@ -106,7 +106,7 @@ export const metadata: Metadata = {
 }
 
 // Structured Data for better SEO
-const jsonLd = {
+const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
   "@id": "https://divyanshubca.vercel.app/#person",
@@ -133,6 +133,14 @@ const jsonLd = {
   description: "Divyanshu Kushwaha - MERN Stack Developer from Kanpur & Allenhouse Institute of Technology. Specializing in React.js, Node.js, and MongoDB."
 }
 
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Divyanshu Kushwaha",
+  alternateName: ["Divyanshu Kushwaha Portfolio", "Divyanshu Portfolio"],
+  url: "https://divyanshubca.vercel.app/",
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -154,7 +162,11 @@ export default function RootLayout({
         {/* Structured Data */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
 
         {/* Performance optimizations */}

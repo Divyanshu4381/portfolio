@@ -64,15 +64,14 @@ export default function Navbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-      className={`navbar fixed top-3 sm:top-4 md:top-5 left-0 right-0 z-50 transition-all duration-300 mx-4 sm:mx-6 md:mx-8 lg:mx-10 ${isScrolled
-          ? "bg-black/80 backdrop-blur-xl border border-green-500/30 shadow-2xl shadow-green-500/20 rounded-2xl lg:rounded-full"
-          : "bg-transparent"
+      className={`navbar fixed top-3 sm:top-4 md:top-5 left-0 right-0 z-[100] transition-all duration-300 mx-3 sm:mx-6 md:mx-8 lg:mx-10 ${isScrolled
+        ? "bg-black/90 backdrop-blur-xl border border-green-500/30 shadow-2xl shadow-green-500/20 rounded-2xl lg:rounded-full"
+        : "bg-transparent"
         }`}
     >
       <div className="container mx-auto px-4 sm:px-5 md:px-6">
         <div className="flex items-center justify-center h-14 sm:h-16">
 
-          {/* Desktop Navigation - Centered */}
           <div className="hidden lg:flex items-center space-x-1">
             {navItems.map((item, index) => (
               <div key={item.name} className="relative">
@@ -99,7 +98,6 @@ export default function Navbar() {
               </div>
             ))}
 
-            {/* CTA Button */}
             <motion.div
               initial={{ scale: 0, rotate: 360 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -118,12 +116,15 @@ export default function Navbar() {
             </motion.div>
           </div>
 
-          {/* Mobile Menu Button - Centered */}
-          <div className="lg:hidden flex items-center">
+          <div className="lg:hidden flex items-center w-full justify-between">
+            {/* Brand Name on Mobile (Optional but good for context) */}
+            <span className="font-bold text-lg bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent opacity-90">
+              Divyanshu
+            </span>
             <Button
               variant="outline"
-              size="lg"
-              className="bg-black/80 backdrop-blur-sm border-green-500/30 text-white hover:bg-green-500/10 px-6 py-2 text-base"
+              size="sm"
+              className="bg-black/80 backdrop-blur-sm border-green-500/30 text-white hover:bg-green-500/10 px-4 py-2 h-10"
               onClick={() => setIsOpen(!isOpen)}
             >
               <span className="mr-2">Menu</span>
@@ -132,7 +133,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -140,15 +140,15 @@ export default function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden overflow-hidden"
+              className="lg:hidden"
             >
               <div className="py-4 bg-black/95 backdrop-blur-lg rounded-2xl mt-2 border border-green-500/20 max-h-[80vh] overflow-y-auto">
                 {navItems.map((item) => (
                   <div key={item.name}>
                     <button
                       className={`block w-full text-left px-4 py-3 transition-all duration-200 rounded-lg mx-2 text-base ${item.name === activeSection
-                          ? "text-white bg-green-500/20 border border-green-500/30"
-                          : "text-gray-300 hover:text-white hover:bg-green-500/10"
+                        ? "text-white bg-green-500/20 border border-green-500/30"
+                        : "text-gray-300 hover:text-white hover:bg-green-500/10"
                         }`}
                       onClick={() => handleNavClick(item.href, item.name)}
                     >

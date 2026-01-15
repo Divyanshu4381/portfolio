@@ -172,8 +172,8 @@ export default function PortfolioSection() {
     { id: "erp", name: "Enterprise Solutions", icon: TrendingUp },
   ]
 
-  const filteredProjects = selectedCategory === "all" 
-    ? projectsData 
+  const filteredProjects = selectedCategory === "all"
+    ? projectsData
     : projectsData.filter((project) => project.category === selectedCategory)
 
   const toggleShowMore = (projectIndex: number) => {
@@ -236,7 +236,7 @@ export default function PortfolioSection() {
       >
         {/* Enhanced Background Effects */}
         <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500/5 via-transparent to-emerald-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
-        
+
         {/* Project Image */}
         <div className="relative mb-3 sm:mb-4 overflow-hidden rounded-lg sm:rounded-xl">
           <div className="relative h-48 sm:h-56 md:h-64 w-full overflow-hidden">
@@ -252,10 +252,10 @@ export default function PortfolioSection() {
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           </div>
-          
+
           {/* Image Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
-          
+
           {/* Live Demo Badge */}
           <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
             <div className="rounded-full bg-green-500/90 px-2 py-1 text-xs font-semibold text-black backdrop-blur-sm">
@@ -319,7 +319,7 @@ export default function PortfolioSection() {
 
           {/* Action Buttons */}
           <div className="mt-auto flex gap-2 sm:gap-3">
-            <button 
+            <button
               onClick={handleLiveDemoClick}
               className="flex flex-1 items-center justify-center gap-1 sm:gap-2 rounded-md border border-green-500/30 bg-transparent px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-green-400 transition-all duration-300 hover:bg-green-500/10 hover:text-green-300 cursor-pointer"
             >
@@ -327,7 +327,7 @@ export default function PortfolioSection() {
               <span className="hidden xs:inline">Live Demo</span>
               <span className="xs:hidden">Demo</span>
             </button>
-            <button 
+            <button
               onClick={handleCodeClick}
               className="flex flex-1 items-center justify-center gap-1 sm:gap-2 rounded-md border border-blue-500/30 bg-transparent px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-blue-400 transition-all duration-300 hover:bg-blue-500/10 hover:text-blue-300 cursor-pointer"
             >
@@ -392,18 +392,17 @@ export default function PortfolioSection() {
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`group relative flex items-center gap-1 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
-                selectedCategory === category.id
+              className={`group relative flex items-center gap-1 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${selectedCategory === category.id
                   ? "bg-gradient-to-r from-green-500 to-emerald-500 text-black shadow-lg shadow-green-500/25"
                   : "border border-green-500/20 bg-gray-800/50 text-gray-300 hover:border-green-400/40 hover:bg-gray-700/50 backdrop-blur-sm"
-              }`}
+                }`}
             >
               <category.icon className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden xs:inline">{category.name}</span>
               <span className="xs:hidden">
-                {category.id === 'all' ? 'All' : 
-                 category.id === 'web' ? 'Web' :
-                 category.id === 'app' ? 'App' : 'ERP'}
+                {category.id === 'all' ? 'All' :
+                  category.id === 'web' ? 'Web' :
+                    category.id === 'app' ? 'App' : 'ERP'}
               </span>
             </button>
           ))}
@@ -411,7 +410,7 @@ export default function PortfolioSection() {
 
         {/* Projects Grid */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 md:gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6 sm:gap-8"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
@@ -428,7 +427,7 @@ export default function PortfolioSection() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <button 
+          <button
             onClick={handleGitHubClick}
             className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-lg font-semibold text-black shadow-xl sm:shadow-2xl shadow-green-500/30 transition-all duration-300 hover:from-green-600 hover:to-emerald-600 rounded-lg cursor-pointer w-full sm:w-auto"
           >

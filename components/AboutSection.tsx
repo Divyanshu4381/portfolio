@@ -155,16 +155,17 @@ export default function AboutSection() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="flex justify-center relative z-20 order-1 lg:order-2 mb-8 lg:mb-0"
+            className="flex justify-center relative z-20 order-1 lg:order-2 mb-10 lg:mb-0"
           >
-            <div className="relative w-[280px] h-[320px] sm:w-[320px] sm:h-[380px] md:w-[350px] md:h-[420px] lg:w-[380px] lg:h-[440px] xl:w-[400px] xl:h-[460px] rounded-2xl sm:rounded-3xl overflow-hidden border border-green-500/20 shadow-lg shadow-green-500/10 hover:shadow-green-500/30 transition-all duration-500">
+            <div className="relative w-[280px] h-[320px] sm:w-[340px] sm:h-[400px] md:w-[380px] md:h-[450px] lg:w-[400px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden border border-green-500/20 shadow-lg shadow-green-500/10 hover:shadow-green-500/30 transition-all duration-500 group">
+              <div className="absolute inset-0 bg-green-500/10 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none"></div>
               <Image
                 src="/aboutPhoto.jpg"
                 alt="Divyanshu Kushwaha - Full Stack Developer from Kanpur"
                 fill
-                className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-105"
                 priority
-                sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 350px, 400px"
+                sizes="(max-width: 640px) 280px, (max-width: 768px) 340px, (max-width: 1024px) 380px, 400px"
               />
             </div>
           </motion.div>

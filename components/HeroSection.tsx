@@ -81,19 +81,19 @@ export default function HeroSection({ city }: HeroSectionProps) {
               initial={{ opacity: 0, y: 30, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.8 }}
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-4 px-4"
+              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-4 px-2 sm:px-4"
             >
-              <span className="block text-white text-lg sm:text-xl md:text-2xl lg:text-3xl mb-2">
+              <span className="block text-white text-lg sm:text-2xl md:text-3xl mb-2 font-medium">
                 Hi, I am
               </span>
-              <span className="block bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent pb-1">
                 Divyanshu Kushwaha
               </span>
             </motion.h1>
 
             {/* Description - Responsive text sizing and spacing */}
             <motion.p
-              className="text-gray-300 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed sm:leading-loose px-4 sm:px-6 break-words"
+              className="text-gray-300 text-base sm:text-lg md:text-xl mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed sm:leading-loose px-2 sm:px-6 break-words"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -106,7 +106,7 @@ export default function HeroSection({ city }: HeroSectionProps) {
 
             {/* 📄 Resume Button - Responsive sizing */}
             <motion.div
-              className="flex justify-center mb-6 sm:mb-8 px-4"
+              className="flex justify-center mb-8 sm:mb-10 px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -117,10 +117,10 @@ export default function HeroSection({ city }: HeroSectionProps) {
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto max-w-xs mx-auto"
               >
-                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-black px-6 py-2 sm:px-8 sm:py-3 rounded-lg font-semibold shadow-lg relative overflow-hidden group w-full">
+                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-black px-6 py-6 sm:px-8 sm:py-6 rounded-xl font-semibold shadow-lg relative overflow-hidden group w-full text-lg">
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-green-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="relative z-10 flex items-center justify-center text-sm sm:text-base">
-                    View Resume <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                  <span className="relative z-10 flex items-center justify-center">
+                    View Resume <ArrowRight className="w-5 h-5 ml-2" />
                   </span>
                 </Button>
               </a>
@@ -128,7 +128,7 @@ export default function HeroSection({ city }: HeroSectionProps) {
 
             {/* 🌐 Social Links - Responsive spacing and sizing */}
             <motion.div
-              className="flex justify-center gap-4 sm:gap-6 mb-8 sm:mb-10 px-4"
+              className="flex justify-center gap-6 sm:gap-8 mb-8 sm:mb-10 px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -137,23 +137,23 @@ export default function HeroSection({ city }: HeroSectionProps) {
                 href="https://github.com/Divyanshu4381"
                 target="_blank"
                 rel="me noopener noreferrer"
-                className="p-2 rounded-full hover:bg-green-500/10 transition-colors duration-300"
+                className="p-3 bg-white/5 rounded-full hover:bg-green-500/20 transition-all duration-300 border border-white/10 hover:border-green-500/50"
               >
-                <Github className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300 hover:text-green-400 transition" />
+                <Github className="w-6 h-6 sm:w-7 sm:h-7 text-gray-300 hover:text-green-400 transition" />
               </a>
               <a
                 href="https://linkedin.com/in/divyanshukushwaha"
                 target="_blank"
                 rel="me noopener noreferrer"
-                className="p-2 rounded-full hover:bg-green-500/10 transition-colors duration-300"
+                className="p-3 bg-white/5 rounded-full hover:bg-green-500/20 transition-all duration-300 border border-white/10 hover:border-green-500/50"
               >
-                <Linkedin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300 hover:text-green-400 transition" />
+                <Linkedin className="w-6 h-6 sm:w-7 sm:h-7 text-gray-300 hover:text-green-400 transition" />
               </a>
               <a
                 href="mailto:divyanshu4381@gmail.com"
-                className="p-2 rounded-full hover:bg-green-500/10 transition-colors duration-300"
+                className="p-3 bg-white/5 rounded-full hover:bg-green-500/20 transition-all duration-300 border border-white/10 hover:border-green-500/50"
               >
-                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300 hover:text-green-400 transition" />
+                <Mail className="w-6 h-6 sm:w-7 sm:h-7 text-gray-300 hover:text-green-400 transition" />
               </a>
             </motion.div>
 

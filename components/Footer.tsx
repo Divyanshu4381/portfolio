@@ -86,7 +86,7 @@ export default function Footer() {
             <motion.img
               src="/logo.png"
               alt="Divyanshu Logo"
-              className="w-40 sm:w-48 md:w-52 mx-auto md:mx-0"
+              className="w-32 sm:w-40 md:w-52 mx-auto md:mx-0"
               initial={{ scale: 0.8, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8, ease: backOut }}
