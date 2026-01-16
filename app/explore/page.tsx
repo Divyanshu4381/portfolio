@@ -5,6 +5,27 @@ import { Github, Linkedin, Twitter, Facebook, Instagram, Mail } from "lucide-rea
 export const metadata = {
     title: "Explore Web Development Services | Divyanshu Kushwaha",
     description: "Browse all web development services, locations, and technologies offered by Divyanshu Kushwaha. A complete directory of resources.",
+    openGraph: {
+        title: "Explore Web Development Services | Divyanshu Kushwaha",
+        description: "Browse all web development services, locations, and technologies offered by Divyanshu Kushwaha.",
+        url: "https://divyanshubca.vercel.app/explore",
+        siteName: "Divyanshu Kushwaha Portfolio",
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Explore Web Development Services",
+            },
+        ],
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Explore Web Development Services | Divyanshu Kushwaha",
+        description: "Browse all web development services, locations, and technologies offered by Divyanshu Kushwaha.",
+        images: ["/og-image.png"],
+    },
 }
 
 export default function ExplorePage() {

@@ -6,6 +6,27 @@ export const metadata = {
     title: "Web Development & SEO Audit Strategy | Complete Guide 2026",
     description: "A comprehensive SEO and Web Development Audit Strategy report. detailed analysis of on-page optimization, technical SEO, and content strategy for modern web applications.",
     keywords: ["SEO Audit", "Web Development Checklist", "Technical SEO", "React Performance", "Next.js Optimization", "Core Web Vitals"],
+    openGraph: {
+        title: "Web Development & SEO Audit Strategy | Complete Guide 2026",
+        description: "A comprehensive SEO and Web Development Audit Strategy report for modern web applications.",
+        url: "https://divyanshubca.vercel.app/web-development-seo-audit",
+        siteName: "Divyanshu Kushwaha Portfolio",
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Web Development SEO Audit",
+            },
+        ],
+        type: "article",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Web Development & SEO Audit Strategy",
+        description: "A comprehensive SEO and Web Development Audit Strategy report.",
+        images: ["/og-image.png"],
+    },
 }
 
 export default function SEOAuditPage() {

@@ -55,6 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         openGraph: {
             title: `Top Web Developer in ${cityName} - Divyanshu Kushwaha`,
             description: `Professional Web Development Services in ${cityName}. React, Node.js, and Custom Software Solutions.`,
+            url: `https://divyanshubca.vercel.app/hire-web-developer-in-${citySlug}`,
+            siteName: "Divyanshu Kushwaha Portfolio",
             images: [
                 {
                     url: "/og-image.png",
@@ -63,6 +65,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                     alt: `Web Developer in ${cityName}`,
                 },
             ],
+            type: "website",
+            locale: "en_US",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: `Top Web Developer in ${cityName} - Divyanshu Kushwaha`,
+            description: `Professional Web Development Services in ${cityName}. React, Node.js, and Custom Software Solutions.`,
+            images: ["/og-image.png"],
+        },
+        alternates: {
+            canonical: `/hire-web-developer-in-${citySlug}`,
         }
     }
 }
