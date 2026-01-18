@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { cities } from "@/lib/cities"
+import { getAllCities } from "@/app/seo/lib/cities"
 import { Github, Linkedin, Twitter, Facebook, Instagram, Mail } from "lucide-react"
 
 export const metadata = {
@@ -29,6 +29,7 @@ export const metadata = {
 }
 
 export default function ExplorePage() {
+    const cities = getAllCities()
     const socialLinks = [
         { name: "GitHub", href: "https://github.com/Divyanshu4381", icon: Github },
         { name: "LinkedIn", href: "https://www.linkedin.com/in/divyanshukushwaha", icon: Linkedin },
@@ -95,7 +96,7 @@ export default function ExplorePage() {
                         {cities.map((city) => (
                             <Link
                                 key={city.name}
-                                href={`/hire-web-developer-in-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                href={`/hire-web-developer-in-${city.slug}`}
                                 className="text-gray-400 hover:text-green-400 text-sm transition-colors"
                             >
                                 Web Developer in {city.name}

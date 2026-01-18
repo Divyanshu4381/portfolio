@@ -30,6 +30,16 @@ export const metadata: Metadata = {
     "Freelance Web Developer",
     "Allenhouse Institute of Technology",
     "Frontend Developer",
+    "PWA Developer",
+    "Startup Website Developer",
+    "Landing Page Creator", 
+    "Corporate Website Design", 
+    "UI/UX Design Services", 
+    "Website Maker in Kanpur", 
+    "Remote React Developer", 
+    "Business Portfolio Designer", 
+    "RESTful API Integration",
+    "Affordable Web Design Kanpur",
     "Backend Developer",
     "JavaScript Expert",
     "TypeScript Developer",
@@ -71,7 +81,7 @@ export const metadata: Metadata = {
     siteName: "Divyanshu Kushwaha Portfolio",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.webp",
         width: 1200,
         height: 630,
         alt: "Divyanshu Kushwaha - MERN Stack Developer",
@@ -83,7 +93,7 @@ export const metadata: Metadata = {
     title: "Divyanshu Kushwaha - MERN Stack Developer",
     description: "Professional MERN Stack Developer specializing in React.js, Node.js, MongoDB, and Express.js.",
     creator: "@Divyanshu4381",
-    images: ["/og-image.png"],
+    images: ["/og-image.webp"],
   },
   robots: {
     index: true,
@@ -97,10 +107,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add these when you have them
-    // google: "your-google-verification-code",
-    // yandex: "your-yandex-verification-code",
-    // yahoo: "your-yahoo-verification-code",
+    google: "google870b879f1f298f81", // Already verified via HTML file
   },
   category: "technology",
 }
@@ -141,6 +148,122 @@ const websiteJsonLd = {
   url: "https://divyanshubca.vercel.app/",
 }
 
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://divyanshubca.vercel.app/#localbusiness",
+  name: "Divyanshu Kushwaha - Remote Web Development Services",
+  image: "/og-image.png",
+  description: "Professional Remote MERN Stack Web Development Services for clients in India and United States. Specializing in React.js, Node.js, MongoDB, and custom web applications with seamless remote collaboration.",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Kanpur",
+    addressRegion: "Uttar Pradesh",
+    addressCountry: "IN"
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: "26.4499",
+    longitude: "80.3319"
+  },
+  url: "https://divyanshubca.vercel.app",
+  email: "divyanshu4381@gmail.com",
+  priceRange: "$$",
+  serviceType: ["Remote Web Development", "Freelance MERN Stack Development", "Custom Web Applications"],
+  areaServed: [
+    {
+      "@type": "Country",
+      name: "India"
+    },
+    {
+      "@type": "Country",
+      name: "United States"
+    },
+    {
+      "@type": "City",
+      name: "Mumbai",
+      addressCountry: "IN"
+    },
+    {
+      "@type": "City",
+      name: "Delhi",
+      addressCountry: "IN"
+    },
+    {
+      "@type": "City",
+      name: "Bengaluru",
+      addressCountry: "IN"
+    },
+    {
+      "@type": "City",
+      name: "San Francisco",
+      addressCountry: "US"
+    },
+    {
+      "@type": "City",
+      name: "New York",
+      addressCountry: "US"
+    },
+    {
+      "@type": "City",
+      name: "Austin",
+      addressCountry: "US"
+    }
+  ],
+  sameAs: [
+    "https://github.com/Divyanshu4381",
+    "https://www.linkedin.com/in/divyanshukushwaha",
+    "https://x.com/Divyanshuk4381"
+  ]
+}
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do you work with US clients remotely?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, I provide remote MERN stack development services to clients in the United States. I work seamlessly across time zones, delivering high-quality web applications for businesses in San Francisco, New York, Austin, and other major US cities."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What technologies do you specialize in?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "I specialize in the MERN stack: MongoDB, Express.js, React.js, and Node.js. I also work with Next.js, TypeScript, React Native, and modern web technologies to build scalable, performant applications."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are your rates for freelance projects?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "My rates are competitive and vary based on project complexity and scope. I offer cost-effective solutions compared to local developers in the US, while maintaining high quality standards. Contact me for a detailed quote based on your specific requirements."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you handle communication across time zones?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "I maintain flexible working hours to overlap with US business hours when needed. I use modern collaboration tools like Slack, Zoom, and project management platforms to ensure smooth communication. My location in India also enables 24/7 development cycles for faster project delivery."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can you help with both frontend and backend development?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, as a full-stack MERN developer, I handle both frontend (React.js, Next.js) and backend (Node.js, Express.js, MongoDB) development. I can build complete web applications from database design to user interface implementation."
+      }
+    }
+  ]
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -167,6 +290,14 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
 
         {/* Performance optimizations */}
