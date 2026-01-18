@@ -86,6 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
+
 // 3. Page Component
 export default async function CityPage({ params }: Props) {
     const resolvedParams = await params
@@ -97,12 +98,34 @@ export default async function CityPage({ params }: Props) {
         notFound()
     }
 
+    const { name: cityName, state: cityState, country } = cityData
+
     // Get unique content for this city
     const cityContent = (cityContentData as Record<string, any>)[citySlug] || {
         intro: `Looking for professional web development services in ${cityData.name}? I specialize in building scalable, modern web applications using the MERN stack.`,
         stats: `Growing demand for web developers in ${cityData.name}`,
         localInsight: `${cityData.name} is experiencing digital transformation across industries.`,
         cta: `Let's build something amazing together in ${cityData.name}`
+    }
+
+    // Breadcrumb Schema for better navigation in search results
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://divyanshubca.vercel.app"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": `Web Developer in ${cityName}`,
+                "item": `https://divyanshubca.vercel.app/hire-web-developer-in-${citySlug}`
+            }
+        ]
     }
 
     return (
@@ -117,7 +140,13 @@ export default async function CityPage({ params }: Props) {
             <HeroSection city={cityName} />
 
             {/* Unique City-Specific Content */}
-            <CityIntroSection citySlug={citySlug} cityName={cityName} />
+            <CityIntroSection
+                cityName={cityName}
+                intro={cityContent.intro}
+                stats={cityContent.stats}
+                localInsight={cityContent.localInsight}
+                cta={cityContent.cta}
+            />
 
             <AboutSection />
             <SkillsSection />
