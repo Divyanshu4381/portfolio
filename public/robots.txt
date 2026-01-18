@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Temporarily hide city pages (remove # below to enable them)
-Disallow: /hire-web-developer-in-
+Disallow: /hire-web-developer-in-*
 Disallow: /web-developer-seo-audit
 
 # Host
