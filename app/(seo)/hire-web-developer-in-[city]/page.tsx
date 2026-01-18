@@ -107,17 +107,17 @@ export default async function CityPage({ params }: Props) {
 
     return (
         <div className="bg-black min-h-screen text-white">
+            {/* Breadcrumb Schema */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+            />
+
             <Navbar />
-            <HeroSection city={cityData.name} />
+            <HeroSection city={cityName} />
 
             {/* Unique City-Specific Content */}
-            <CityIntroSection
-                cityName={cityData.name}
-                intro={cityContent.intro}
-                stats={cityContent.stats}
-                localInsight={cityContent.localInsight}
-                cta={cityContent.cta}
-            />
+            <CityIntroSection citySlug={citySlug} cityName={cityName} />
 
             <AboutSection />
             <SkillsSection />
