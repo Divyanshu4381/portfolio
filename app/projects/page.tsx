@@ -15,6 +15,32 @@ import ProjectCard from "@/components/ProjectCard"
 import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
 
+export const metadata = {
+    title: "Projects | Divyanshu Kushwaha Portfolio",
+    description: "Explore my complete portfolio of projects, ranging from web applications, mobile apps to enterprise solutions.",
+    openGraph: {
+        title: "Projects | Divyanshu Kushwaha Portfolio",
+        description: "Explore my complete portfolio of projects, ranging from web applications, mobile apps to enterprise solutions.",
+        url: "https://divyanshubca.vercel.app/projects",
+        siteName: "Divyanshu Kushwaha Portfolio",
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Projects",
+            },
+        ],
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Projects | Divyanshu Kushwaha Portfolio",
+        description: "Explore my complete portfolio of projects, ranging from web applications, mobile apps to enterprise solutions.",
+        images: ["/og-image.png"],
+    },
+}
+
 export default function ProjectsPage() {
     const [selectedCategory, setSelectedCategory] = useState("all")
 
@@ -75,8 +101,8 @@ export default function ProjectsPage() {
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.id)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedCategory === category.id
-                                        ? "bg-green-500 text-black shadow-lg shadow-green-500/25"
-                                        : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/5"
+                                    ? "bg-green-500 text-black shadow-lg shadow-green-500/25"
+                                    : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/5"
                                     }`}
                             >
                                 <category.icon className="w-4 h-4" />
