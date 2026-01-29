@@ -31,6 +31,7 @@ export default function Navbar() {
     { name: "Work", href: "#portfolio" },
     { name: "Experience", href: "#experience" },
     { name: "Certificates", href: "#certificates" },
+    { name: "Blog", href: "/blog" },
   ]
 
   const handleNavClick = (href: string, name: string) => {
