@@ -1,5 +1,8 @@
 import { getAllPosts } from "@/lib/blog";
 import BlogCard from "@/components/BlogCard";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const metadata = {
     title: "Blog | Insights & Tutorials",
@@ -12,9 +15,17 @@ export default function BlogIndexPage() {
     return (
         <div className="min-h-screen bg-black text-white py-24 px-4 md:px-6">
             <div className="container mx-auto max-w-6xl">
+                <div>
+                    <Link href="/">
+                        <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5 gap-2">
+                            <ChevronLeft className="w-5 h-5" />
+                            Back to Home
+                        </Button>
+                    </Link>
+                </div>
                 <div className="flex flex-col items-center text-center space-y-4 mb-20">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
-                        Technical Blog
+                        Blog
                     </h1>
                     <p className="max-w-[700px] text-gray-400 md:text-xl">
                         Insights on System Design, Frontend Architecture, and Modern Web Stacks.
