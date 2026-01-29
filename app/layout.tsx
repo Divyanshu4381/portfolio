@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   "keywords": [
     "Divyanshu Kushwaha",
     "Divyanshu Kushwaha Portfolio",
+    "Divyanshu Kushwaha Blog",
+    "Divyanshu Kushwaha Web Developer in Kanpur",
     "Best Web Developer in Kanpur",
     "Top Software Developer in Kanpur",
     "Freelance Web Developer India",
@@ -178,6 +180,16 @@ const localBusinessJsonLd = {
     {
       "@type": "Country",
       name: "United States"
+    },
+    {
+      "@type": "City",
+      name: "Kanpur",
+      addressCountry: "IN"
+    },
+    {
+      "@type": "City",
+      name: "Lucknow",
+      addressCountry: "IN"
     },
     {
       "@type": "City",
