@@ -106,7 +106,8 @@ export default function Footer() {
                   <motion.a
                     key={index}
                     href={social.href}
-                    rel="me"
+                    target="_blank"
+                    rel="me noopener noreferrer"
                     className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 transition-all duration-300 ${social.color} hover:bg-green-500/20`}
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
