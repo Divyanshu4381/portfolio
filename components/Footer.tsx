@@ -28,6 +28,7 @@ export default function Footer() {
     { name: "Home", href: "/" },
     { name: "About us", href: "#about" },
     { name: "Projects", href: "#portfolio" },
+    { name: "Explore Services", href: "/explore" },
     { name: "Skills & Abilites", href: "#skills" },
     // { name: "Career", href: "/career" },
     { name: "Education", href: "#edu" },

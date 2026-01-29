@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { getAllCities } from "@/app/seo/lib/cities"
 import { Github, Linkedin, Twitter, Facebook, Instagram, Mail } from "lucide-react"
 
 export const metadata = {
@@ -29,7 +28,6 @@ export const metadata = {
 }
 
 export default function ExplorePage() {
-    const cities = getAllCities()
     const socialLinks = [
         { name: "GitHub", href: "https://github.com/Divyanshu4381", icon: Github },
         { name: "LinkedIn", href: "https://www.linkedin.com/in/divyanshukushwaha", icon: Linkedin },
@@ -86,24 +84,13 @@ export default function ExplorePage() {
                     </div>
                 </section>
 
-                {/* Service Locations (HTML Sitemap) */}
-                <section className="space-y-6">
+                {/* Service Locations (HTML Sitemap) - REMOVED */}
+                {/* <section className="space-y-6">
                     <div className="flex items-center justify-between border-b border-gray-800 pb-2">
                         <h2 className="text-2xl font-semibold">Service Locations</h2>
-                        <span className="text-sm text-gray-500">{cities.length} Cities</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {cities.map((city) => (
-                            <Link
-                                key={city.name}
-                                href={`/hire-web-developer-in-${city.slug}`}
-                                className="text-gray-400 hover:text-green-400 text-sm transition-colors"
-                            >
-                                Web Developer in {city.name}
-                            </Link>
-                        ))}
-                    </div>
-                </section>
+                   <p className="text-gray-400">Serving clients globally.</p>
+                </section> */}
 
                 {/* Keywords & Technologies */}
                 <section className="space-y-6">
