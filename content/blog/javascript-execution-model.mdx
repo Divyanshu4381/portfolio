@@ -1,0 +1,128 @@
+---
+title: "JavaScript Execution Model: From Execution Context to Event Loop"
+date: "2026-01-31"
+excerpt: "A comprehensive guide to understanding how JavaScript works under the hood, covering Execution Context, Call Stack, and the Event Loop."
+image: "/images/blog/js-execution-flow.png"
+tags: ["JavaScript", "Web Development", "Frontend"]
+---
+
+# JavaScript Execution Model Explained
+
+Have you ever wondered how JavaScript actually runs your code? It’s not just about syntax; it’s about the **Execution Model**—the engine's internal process for parsing, planning, and executing your scripts.
+
+This model is the backbone of JavaScript, and understanding it is crucial for mastering the language. It revolves around three core components:
+
+1.  **Execution Context**
+2.  **Call Stack**
+3.  **Event Loop & Queues**
+
+Let’s break these down into simple, actionable concepts.
+
+---
+
+## 1. Execution Context: Where Code Runs
+
+Think of the **Execution Context** as the environment where your code lives and executes. It’s responsible for handling:
+*   Variable scope
+*   Function references
+*   The value of `this`
+
+### Types of Execution Context
+*   **Global Execution Context (GEC):** The default context. It runs when your script loads. In the browser, `this` points to the `window` object.
+*   **Function Execution Context (FEC):** Created whenever a function is called. It manages the function's own variables and arguments.
+*   **Eval Execution Context:** (Rarely used) For code running inside `eval()`.
+
+### The Two Phases of Execution
+Before running a single line of code, the JavaScript engine performs a setup ritual:
+
+**Phase 1: Memory Creation Phase**
+*   Memory is allocated for all variables (initially set to `undefined`) and functions.
+*   This is where **Hoisting** happens.
+
+**Phase 2: Execution Phase**
+*   The code is executed line-by-line.
+*   Variables are assigned their actual values.
+*   Functions are invoked.
+
+![JavaScript Execution Model Diagram](/images/blog/js-execution-flow.png)
+
+---
+
+## 2. Call Stack: The Order of Execution
+
+JavaScript is **single-threaded**, meaning it can only do one thing at a time. The **Call Stack** is the mechanism that keeps track of this.
+
+It follows the **LIFO (Last-In, First-Out)** principle:
+1.  When a function is called, it’s **pushed** onto the stack.
+2.  When it finishes, it’s **popped** off the stack.
+
+This simple structure ensures that the engine always knows which function is currently running and which one to return to.
+
+**Example Flow:**
+`main()` calls `first()`, which calls `second()`.
+*   **Stack Top:** `second()` (Running)
+*   **Middle:** `first()` (Paused)
+*   **Bottom:** `main()` (Paused)
+
+---
+
+## 3. Event Loop: Making JavaScript Responsive
+
+If JavaScript is single-threaded, how does it handle asynchronous tasks like fetching data or timers without freezing the screen?
+
+Enter the **Event Loop** mechanism.
+
+### The Big Picture
+The runtime environment consists of:
+*   **Call Stack:** Runs synchronous code.
+*   **Web APIs:** Handles async operations (timings, fetch requests, DOM events).
+*   **Queues (Callback/Task Queue):** Holds callbacks ready to run.
+*   **Event Loop:** The coordinator.
+
+### How It Works
+1.  **Sync Code:** Runs immediately on the Call Stack.
+2.  **Async Code:** Delegated to Web APIs. The stack continues with the next task.
+3.  **Queueing:** Once the async task finishes (e.g., timer ends), its callback moves to the Queue.
+4.  **The Loop:** The Event Loop constantly checks: *Is the Call Stack empty?*
+    *   **If YES:** It moves the first item from the Queue to the Stack.
+    *   **If NO:** It waits.
+
+![Event Loop Diagram](/images/blog/js-event-loop.png)
+
+### The "Restaurant" Analogy
+Imagine a restaurant kitchen:
+*   **Chef (JS Engine):** Can only cook one dish at a time.
+*   **Cooking Station (Call Stack):** The current task.
+*   **Helpers (Web APIs):** Chop veggies, pre-heat ovens (async work).
+*   **Order Queue:** Finished prep work waiting for the Chef.
+*   **Manager (Event Loop):** Ensures the Chef only takes a new order when the current dish is done.
+
+**Crucial Rule:** The Event Loop will *never* push a queue task to the stack until the stack is completely empty.
+
+---
+
+## 4. Microtasks vs. Macrotasks
+
+Not all async tasks are equal. JavaScript prioritizes them differently:
+
+*   **Microtasks:** High priority. Includes `Promise.then()`, `queueMicrotask`, `MutationObserver`.
+*   **Macrotasks:** Normal priority. Includes `setTimeout`, `setInterval`, `setImmediate`.
+
+**Execution Order:**
+1.  Run all synchronous code.
+2.  Run **ALL** Microtasks in the queue (until empty).
+3.  Run **ONE** Macrotask.
+4.  Repeat.
+
+This is why a `Promise` usually resolves before a `setTimeout`, even if both are ready at the same time.
+
+---
+
+## Summary
+
+*   **Execution Context** prepares the memory and environment.
+*   **Call Stack** manages the synchronous function order.
+*   **Web APIs** handle the heavy lifting for async tasks.
+*   **Event Loop** orchestrates everything, ensuring standard callbacks and microtasks run at the right time.
+
+Understanding this flow allows you to write optimized, bug-free, and non-blocking JavaScript content.
