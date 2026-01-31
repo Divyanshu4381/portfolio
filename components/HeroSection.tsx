@@ -68,7 +68,7 @@ export default function HeroSection({ city }: HeroSectionProps) {
             >
               <Avatar className="w-full h-full border-2 border-green-500/30">
                 <AvatarImage
-                  src="/MyImg.jpg"
+                  src="/myImg.jpg"
                   alt="Divyanshu Kushwaha"
                   className="object-cover filter grayscale hover:grayscale-0 transition duration-300"
                 />
