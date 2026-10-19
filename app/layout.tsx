@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/react";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -324,6 +325,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased`}>
         {children}
+        <Toaster richColors position="bottom-right" theme="dark" closeButton />
 
         {/* Performance monitoring script can be added here */}
         <script

@@ -4,6 +4,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Mail, Phone, User, MessageSquare } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { triggerConfetti, playSuccessChime, playErrorSound } from "@/lib/effects";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
@@ -41,14 +43,25 @@ export default function ContactPage() {
       });
 
       if (res.ok) {
-        alert("✅ Message sent successfully!");
+        playSuccessChime();
+        triggerConfetti();
+        toast.success("Message sent! I'll get back to you within 24 hours.", {
+          description: "Thank you for reaching out. Looking forward to speaking with you!",
+          duration: 5000,
+        });
         e.target.reset();
       } else {
-        alert("❌ Failed to send message. Try again.");
+        playErrorSound();
+        toast.error("Failed to send message. Try again.", {
+          description: "Please check your network or reach out via email directly.",
+        });
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("⚠️ Something went wrong. Please try again.");
+      playErrorSound();
+      toast.error("Something went wrong. Please try again.", {
+        description: "An unexpected error occurred while sending your message.",
+      });
     } finally {
       setLoading(false);
     }
