@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { getDatabase } from "@/lib/mongodb";
 
 export async function POST(req: Request) {
   try {
@@ -10,6 +11,21 @@ export async function POST(req: Request) {
         { error: "Name, email, and message are required." },
         { status: 400 }
       );
+    }
+
+    // Step 1: Save message into MongoDB
+    try {
+      const db = await getDatabase();
+      await db.collection("messages").insertOne({
+        name,
+        email,
+        phone: phone || "",
+        message,
+        read: false,
+        createdAt: new Date(),
+      });
+    } catch (dbError) {
+      console.warn("Could not save message to database:", dbError);
     }
 
     const emailUser = process.env.EMAIL_USER;
@@ -23,7 +39,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Step 1: Create transporter
+    // Step 2: Create transporter
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -32,7 +48,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // Step 2: Email HTML Template (Modern Dark Theme)
+    // Step 3: Email HTML Template (Modern Dark Theme)
     const htmlContent = `
       <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0a; color: #e5e5e5; padding: 30px;">
         <div style="max-width: 600px; background: #111; border: 1px solid #16a34a40; border-radius: 16px; overflow: hidden; margin: 0 auto;">
@@ -79,7 +95,7 @@ export async function POST(req: Request) {
       </div>
     `;
 
-    // Step 3: Mail options
+    // Step 4: Mail options
     const mailOptions = {
       from: `"${name}" <${emailUser}>`,
       replyTo: email,

@@ -4,6 +4,7 @@ import "./globals.css"
 import { Analytics } from "@vercel/analytics/react";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -324,7 +325,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Divyanshu Portfolio" />
       </head>
       <body className={`${inter.className} antialiased`}>
-        {children}
+        <MaintenanceGuard>
+          {children}
+        </MaintenanceGuard>
         <Toaster richColors position="bottom-right" theme="dark" closeButton />
 
         {/* Performance monitoring script can be added here */}
