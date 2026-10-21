@@ -16,8 +16,8 @@ import {
   FolderOpen,
   Sparkles,
   X,
-  Database,
 } from "lucide-react";
+import Image from "next/image";
 import {
   Tooltip,
   TooltipContent,
@@ -142,8 +142,15 @@ export default function AdminSidebar({
       {/* Sidebar Header / Brand */}
       <div className="h-16 px-3.5 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-600/10 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-base shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.25)]">
-            D
+          <div className="relative h-9 w-9 rounded-xl overflow-hidden border border-green-500/40 shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+            <Image
+              src="/myImg.jpg"
+              alt="Divyanshu Kushwaha"
+              fill
+              sizes="36px"
+              className="object-cover"
+              priority
+            />
           </div>
           {!sidebarCollapsed && (
             <div className="flex flex-col min-w-0 transition-opacity duration-200">
@@ -342,15 +349,21 @@ export default function AdminSidebar({
         {!sidebarCollapsed ? (
           <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="relative">
-                <div className="w-7 h-7 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-400 text-xs font-bold">
-                  {adminEmail ? adminEmail[0].toUpperCase() : "A"}
+              <div className="relative shrink-0">
+                <div className="relative w-7 h-7 rounded-lg overflow-hidden border border-green-500/40">
+                  <Image
+                    src="/myImg.jpg"
+                    alt="Divyanshu Kushwaha"
+                    fill
+                    sizes="28px"
+                    className="object-cover"
+                  />
                 </div>
                 <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500 ring-2 ring-[#070a12]" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-white truncate max-w-[120px]">
-                  {adminEmail || "Admin User"}
+                  {adminEmail || "Divyanshu Kushwaha"}
                 </p>
                 <p className="text-[10px] text-zinc-400 font-mono flex items-center gap-1">
                   <Shield className="w-2.5 h-2.5 text-green-400" />
@@ -373,9 +386,17 @@ export default function AdminSidebar({
               <TooltipTrigger asChild>
                 <button
                   onClick={onLogout}
-                  className="w-full flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center p-1 rounded-xl hover:bg-red-500/10 transition-colors cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-green-500/40">
+                    <Image
+                      src="/myImg.jpg"
+                      alt="Divyanshu Kushwaha"
+                      fill
+                      sizes="32px"
+                      className="object-cover"
+                    />
+                  </div>
                 </button>
               </TooltipTrigger>
               <TooltipContent

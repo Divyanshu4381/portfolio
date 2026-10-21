@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import {
   Wrench,
   AlertTriangle,
@@ -197,8 +198,14 @@ export default function MaintenanceConfigView({
 
             {/* Screen Content Simulation */}
             <div className="p-6 text-center space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-600/10 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-sm mx-auto shadow-[0_0_15px_rgba(34,197,94,0.2)]">
-                D
+              <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-green-500/40 mx-auto shadow-[0_0_15px_rgba(34,197,94,0.25)]">
+                <Image
+                  src="/myImg.jpg"
+                  alt="Divyanshu Kushwaha"
+                  fill
+                  sizes="48px"
+                  className="object-cover"
+                />
               </div>
 
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-semibold">

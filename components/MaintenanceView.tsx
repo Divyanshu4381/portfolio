@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Mail, Phone, ExternalLink, ShieldCheck, Wrench, Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface MaintenanceViewProps {
   title?: string;
@@ -31,9 +32,16 @@ export default function MaintenanceView({
 
       {/* Top branding header */}
       <header className="relative z-10 w-full max-w-5xl flex justify-between items-center py-4 border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-sm shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-            D
+        <div className="flex items-center gap-2.5">
+          <div className="relative h-9 w-9 rounded-xl overflow-hidden border border-green-500/40 shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+            <Image
+              src="/myImg.jpg"
+              alt="Divyanshu Kushwaha"
+              fill
+              sizes="36px"
+              className="object-cover"
+              priority
+            />
           </div>
           <span className="font-bold tracking-tight text-lg text-white">
             Divyanshu<span className="text-green-400">.</span>

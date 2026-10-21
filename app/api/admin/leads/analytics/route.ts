@@ -67,6 +67,11 @@ export async function GET() {
       }
     });
 
+    // Pending update requests count
+    const pendingRequestsCount = await db
+      .collection("lead_update_requests")
+      .countDocuments({ status: "pending" });
+
     const analytics: ILeadAnalytics = {
       totalLeads,
       leadsThisMonth,
@@ -76,6 +81,7 @@ export async function GET() {
       privateListsCount: Math.max(0, totalLeads - (activeRestrictedShares + publicPublishedShares)),
       activeRestrictedShares,
       publicPublishedShares,
+      pendingRequestsCount,
       statusBreakdown,
     };
 

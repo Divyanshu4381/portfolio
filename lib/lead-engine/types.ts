@@ -80,5 +80,28 @@ export interface ILeadAnalytics {
   privateListsCount: number;
   activeRestrictedShares: number;
   publicPublishedShares: number;
+  pendingRequestsCount?: number;
   statusBreakdown: Record<LeadStatus, number>;
+}
+
+export interface ILeadUpdateRequest {
+  _id?: any;
+  requestId: string;
+  shareToken: string;
+  shareTitle?: string;
+  leadId: string;
+  companyName: string;
+  contactPerson?: string;
+  proposedStatus: LeadStatus;
+  checklist: {
+    contacted: boolean;
+    meetingScheduled?: boolean;
+    followUpNeeded?: boolean;
+  };
+  notes: string;
+  submittedBy: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string | Date;
+  reviewedAt?: string | Date;
+  reviewedBy?: string;
 }

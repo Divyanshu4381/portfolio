@@ -453,6 +453,7 @@ function AdminDashboardContent() {
                   copiedId={copiedId}
                   adminEmail={adminEmail}
                   formatBytes={formatBytes}
+                  leadsCount={leadsCount}
                 />
               )}
 

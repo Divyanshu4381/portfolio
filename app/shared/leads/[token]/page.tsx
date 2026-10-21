@@ -15,6 +15,9 @@ import {
   Globe,
   MapPin,
   CheckCircle,
+  CheckCircle2,
+  X,
+  Send,
 } from "lucide-react";
 
 interface SharedPageProps {
@@ -46,6 +49,66 @@ export default function SharedLeadViewerPage({ params }: SharedPageProps) {
 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
+  // Update Request Modal State
+  const [updatingLead, setUpdatingLead] = useState<Record<string, any> | null>(null);
+  const [submitterName, setSubmitterName] = useState("");
+  const [checklistContacted, setChecklistContacted] = useState(true);
+  const [checklistMeeting, setChecklistMeeting] = useState(false);
+  const [checklistFollowUp, setChecklistFollowUp] = useState(false);
+  const [proposedStatus, setProposedStatus] = useState("contacted");
+  const [updateNotes, setUpdateNotes] = useState("");
+  const [submittingUpdate, setSubmittingUpdate] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  function handleOpenUpdateRequest(lead: Record<string, any>) {
+    setUpdatingLead(lead);
+    setChecklistContacted(true);
+    setChecklistMeeting(false);
+    setChecklistFollowUp(false);
+    setProposedStatus("contacted");
+    setUpdateNotes("");
+    setSubmitError("");
+    setSubmitSuccess(false);
+  }
+
+  async function handleSendUpdateRequest(e: React.FormEvent) {
+    e.preventDefault();
+    if (!updatingLead) return;
+
+    setSubmittingUpdate(true);
+    setSubmitError("");
+
+    try {
+      const res = await fetch(`/api/shared/leads/${token}/request-update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadId: updatingLead.leadId,
+          submittedBy: submitterName || "Anonymous Collaborator",
+          checklist: {
+            contacted: checklistContacted,
+            meetingScheduled: checklistMeeting,
+            followUpNeeded: checklistFollowUp,
+          },
+          proposedStatus,
+          notes: updateNotes,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitSuccess(true);
+      } else {
+        setSubmitError(data.error || "Failed to submit request.");
+      }
+    } catch {
+      setSubmitError("Network error while submitting update request.");
+    } finally {
+      setSubmittingUpdate(false);
+    }
+  }
 
   async function fetchSharedLeads(providedPassword?: string) {
     setLoading(true);
@@ -265,6 +328,7 @@ export default function SharedLeadViewerPage({ params }: SharedPageProps) {
                     {allowed.includes("category") && <th className="py-3 px-4">Industry</th>}
                     {allowed.includes("city") && <th className="py-3 px-4">Location</th>}
                     {allowed.includes("website") && <th className="py-3 px-4">Website</th>}
+                    <th className="py-3 px-4 text-right">Collaboration</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
@@ -341,6 +405,15 @@ export default function SharedLeadViewerPage({ params }: SharedPageProps) {
                           )}
                         </td>
                       )}
+                      <td className="py-3 px-4 text-right">
+                        <button
+                          onClick={() => handleOpenUpdateRequest(lead)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/25 font-medium text-[11px] transition-all cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Update Status</span>
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -375,9 +448,175 @@ export default function SharedLeadViewerPage({ params }: SharedPageProps) {
         </div>
       </main>
 
+      {/* Edit Request / Contact Checklist Modal */}
+      {updatingLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Client Contact Checklist</h3>
+                  <p className="text-[11px] text-zinc-400">
+                    Submit progress for &ldquo;{updatingLead.companyName || "Client"}&rdquo;
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setUpdatingLead(null)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {submitSuccess ? (
+              <div className="py-6 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h4 className="text-base font-bold text-white">Update Request Submitted!</h4>
+                <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+                  Your contact checklist and call notes have been forwarded to the administrator. Once approved, the record will be updated in the system.
+                </p>
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      setUpdatingLead(null);
+                      setSubmitSuccess(false);
+                    }}
+                    className="px-5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold cursor-pointer transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSendUpdateRequest} className="space-y-4 text-xs">
+                {submitError && (
+                  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{submitError}</span>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-zinc-300 mb-1.5 font-semibold">
+                    Your Name / Representative
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={submitterName}
+                    onChange={(e) => setSubmitterName(e.target.value)}
+                    placeholder="e.g. Sales Rep / John Doe"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-green-400"
+                  />
+                </div>
+
+                {/* Checklist options */}
+                <div className="space-y-2 p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                  <span className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider font-semibold mb-2">
+                    Contact Activities Checklist
+                  </span>
+
+                  <label className="flex items-center gap-2.5 cursor-pointer text-zinc-200 hover:text-white">
+                    <input
+                      type="checkbox"
+                      checked={checklistContacted}
+                      onChange={(e) => setChecklistContacted(e.target.checked)}
+                      className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-green-500 focus:ring-0 accent-green-500"
+                    />
+                    <span className="font-medium">Client Contacted (Phone Call / Email / WhatsApp Done)</span>
+                  </label>
+
+                  <label className="flex items-center gap-2.5 cursor-pointer text-zinc-200 hover:text-white">
+                    <input
+                      type="checkbox"
+                      checked={checklistMeeting}
+                      onChange={(e) => setChecklistMeeting(e.target.checked)}
+                      className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-green-500 focus:ring-0 accent-green-500"
+                    />
+                    <span>Meeting / Product Demo Scheduled</span>
+                  </label>
+
+                  <label className="flex items-center gap-2.5 cursor-pointer text-zinc-200 hover:text-white">
+                    <input
+                      type="checkbox"
+                      checked={checklistFollowUp}
+                      onChange={(e) => setChecklistFollowUp(e.target.checked)}
+                      className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-green-500 focus:ring-0 accent-green-500"
+                    />
+                    <span>Follow-up Call / Email Required</span>
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-zinc-300 mb-1.5 font-semibold">
+                    Proposed Lead Status
+                  </label>
+                  <select
+                    value={proposedStatus}
+                    onChange={(e) => setProposedStatus(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-green-400"
+                  >
+                    <option value="contacted">Contacted (Initiated conversation)</option>
+                    <option value="qualified">Qualified (Interested / Potential deal)</option>
+                    <option value="reviewed">Reviewed (Follow-up scheduled)</option>
+                    <option value="archived">Archived (Not interested / Invalid contact)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-zinc-300 mb-1.5 font-semibold">
+                    Call Notes / Conversation Details
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={updateNotes}
+                    onChange={(e) => setUpdateNotes(e.target.value)}
+                    placeholder="e.g. Spoke with client. They asked to follow up next Tuesday with pricing quotation..."
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-green-400 resize-none"
+                  />
+                </div>
+
+                <div className="pt-3 border-t border-zinc-800 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setUpdatingLead(null)}
+                    className="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingUpdate}
+                    className="px-5 py-2 rounded-xl bg-green-500 hover:bg-green-400 text-black font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    {submittingUpdate ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Submit for Admin Approval</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer className="py-4 border-t border-zinc-800/60 text-center text-[11px] text-zinc-600 font-mono">
-        LeadVault Secure Directory System • Read-Only Client Workspace
+        LeadVault Secure Directory System • Collaborative Client Workspace
       </footer>
     </div>
   );

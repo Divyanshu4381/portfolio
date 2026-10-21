@@ -61,6 +61,7 @@ interface OverviewViewProps {
   copiedId: string | null;
   adminEmail: string;
   formatBytes: (bytes: number) => string;
+  leadsCount?: number;
 }
 
 export default function OverviewView({
@@ -74,6 +75,7 @@ export default function OverviewView({
   copiedId,
   adminEmail,
   formatBytes,
+  leadsCount = 0,
 }: OverviewViewProps) {
   const unreadMessagesCount = messagesList.filter((m) => !m.read).length;
   const totalMediaBytes = mediaList.reduce((acc, curr) => acc + (curr.size || 0), 0);
@@ -98,6 +100,18 @@ export default function OverviewView({
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => onNavigateTab("leads")}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs font-semibold border border-green-500/30 transition-colors cursor-pointer shadow-[0_0_12px_rgba(34,197,94,0.15)]"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
+            <span>LeadVault</span>
+            {leadsCount > 0 && (
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-green-500 text-black font-bold">
+                {leadsCount}
+              </span>
+            )}
+          </button>
+          <button
             onClick={() => onNavigateTab("media")}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 transition-colors cursor-pointer"
           >
@@ -106,10 +120,10 @@ export default function OverviewView({
           </button>
           <button
             onClick={() => onNavigateTab("messages")}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-500 hover:bg-green-400 text-black text-xs font-semibold shadow-[0_0_15px_rgba(34,197,94,0.25)] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 transition-colors cursor-pointer"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-black" />
-            <span>View Inquiries</span>
+            <MessageSquare className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Inquiries</span>
           </button>
         </div>
       </div>
@@ -270,16 +284,38 @@ export default function OverviewView({
         <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold mb-3">
           Service Launchpad
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <button
+            onClick={() => onNavigateTab("leads")}
+            className="flex items-center gap-3 p-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800/90 border border-zinc-800 text-left transition-all cursor-pointer group"
+          >
+            <div className="p-2 rounded-lg bg-green-500/10 text-green-400 group-hover:scale-105 transition-transform">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-semibold text-white group-hover:text-green-400 transition-colors">
+                  LeadVault
+                </p>
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+                  ENTERPRISE
+                </span>
+              </div>
+              <p className="text-[11px] text-zinc-400 truncate">
+                {leadsCount > 0 ? `${leadsCount} leads stored & ready` : "Extract & manage leads"}
+              </p>
+            </div>
+          </button>
+
           <button
             onClick={() => onNavigateTab("media")}
             className="flex items-center gap-3 p-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800/90 border border-zinc-800 text-left transition-all cursor-pointer group"
           >
-            <div className="p-2 rounded-lg bg-green-500/10 text-green-400 group-hover:scale-105 transition-transform">
+            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:scale-105 transition-transform">
               <Upload className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-white group-hover:text-green-400 transition-colors">
+              <p className="text-xs font-semibold text-white group-hover:text-emerald-400 transition-colors">
                 Upload New Image
               </p>
               <p className="text-[11px] text-zinc-400 truncate">Add portfolio/certificate assets</p>
@@ -290,11 +326,11 @@ export default function OverviewView({
             onClick={() => onNavigateTab("messages")}
             className="flex items-center gap-3 p-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800/90 border border-zinc-800 text-left transition-all cursor-pointer group"
           >
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:scale-105 transition-transform">
+            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400 group-hover:scale-105 transition-transform">
               <MessageSquare className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-white group-hover:text-emerald-400 transition-colors">
+              <p className="text-xs font-semibold text-white group-hover:text-blue-400 transition-colors">
                 Client Inquiries
               </p>
               <p className="text-[11px] text-zinc-400 truncate">

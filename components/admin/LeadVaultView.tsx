@@ -43,13 +43,14 @@ import {
   ILeadBatch,
   ILeadShare,
   ILeadAnalytics,
+  ILeadUpdateRequest,
   LeadStatus,
 } from "@/lib/lead-engine/types";
 import { CANONICAL_FIELDS } from "@/lib/lead-engine/columnMatcher";
 
 export default function LeadVaultView() {
   const [activeSubTab, setActiveSubTab] = useState<
-    "table" | "upload" | "batches" | "sharing"
+    "table" | "upload" | "batches" | "sharing" | "requests"
   >("table");
 
   // Analytics
@@ -122,6 +123,12 @@ export default function LeadVaultView() {
   const [creatingShare, setCreatingShare] = useState(false);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
+  // Collaborative Update Requests State
+  const [requests, setRequests] = useState<ILeadUpdateRequest[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
+  const [requestFilter, setRequestFilter] = useState<string>("pending");
+  const [actioningRequestId, setActioningRequestId] = useState<string | null>(null);
+
   // Load Data
   useEffect(() => {
     loadAnalytics();
@@ -134,8 +141,10 @@ export default function LeadVaultView() {
       loadBatches();
     } else if (activeSubTab === "sharing") {
       loadShares();
+    } else if (activeSubTab === "requests") {
+      loadRequests();
     }
-  }, [activeSubTab, page, limit, search, statusFilter, categoryFilter, sortBy, sortOrder]);
+  }, [activeSubTab, page, limit, search, statusFilter, categoryFilter, sortBy, sortOrder, requestFilter]);
 
   async function loadAnalytics() {
     try {
@@ -202,6 +211,56 @@ export default function LeadVaultView() {
       toast.error("Failed to load share links");
     } finally {
       setLoadingShares(false);
+    }
+  }
+
+  // Load Collaborative Update Requests
+  async function loadRequests(statusToFetch = requestFilter) {
+    setLoadingRequests(true);
+    try {
+      const res = await fetch(`/api/admin/leads/requests?status=${statusToFetch}`);
+      if (res.ok) {
+        const data = await res.json();
+        setRequests(data.requests || []);
+      }
+    } catch {
+      toast.error("Failed to load update requests");
+    } finally {
+      setLoadingRequests(false);
+    }
+  }
+
+  // Handle Approve / Reject Request
+  async function handleRequestAction(requestId: string, action: "approve" | "reject") {
+    setActioningRequestId(requestId);
+    try {
+      const res = await fetch(`/api/admin/leads/requests/${requestId}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (action === "approve") {
+          playSuccessChime();
+          toast.success("Update Accepted & Applied!", {
+            description: "Lead status and collaborator call notes have been synced.",
+          });
+        } else {
+          toast.success("Request Rejected");
+        }
+        loadRequests();
+        loadAnalytics();
+        loadLeads();
+      } else {
+        playErrorSound();
+        toast.error(data.error || "Action failed");
+      }
+    } catch {
+      playErrorSound();
+      toast.error("Network error while processing request");
+    } finally {
+      setActioningRequestId(null);
     }
   }
 
@@ -595,12 +654,29 @@ export default function LeadVaultView() {
             <Share2 className="w-3.5 h-3.5 text-purple-400" />
             <span>Share & Access</span>
           </button>
+
+          <button
+            onClick={() => setActiveSubTab("requests")}
+            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeSubTab === "requests"
+                ? "bg-zinc-800 text-white font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <FileCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Review Requests</span>
+            {analytics && (analytics.pendingRequestsCount || 0) > 0 && (
+              <span className="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+                {analytics.pendingRequestsCount}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
       {/* 2. Top Summary KPI Cards */}
       {analytics && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3">
           <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-3">
             <span className="text-[10px] font-mono text-zinc-500 uppercase">Total Leads</span>
             <p className="text-xl font-bold text-white mt-0.5">{analytics.totalLeads}</p>
@@ -637,6 +713,20 @@ export default function LeadVaultView() {
             <span className="text-[10px] font-mono text-zinc-500 uppercase">Qualified</span>
             <p className="text-xl font-bold text-emerald-400 mt-0.5">
               {analytics.statusBreakdown?.qualified || 0}
+            </p>
+          </div>
+          <div
+            onClick={() => setActiveSubTab("requests")}
+            className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-3 cursor-pointer hover:border-amber-500/40 transition-colors"
+          >
+            <span className="text-[10px] font-mono text-zinc-500 uppercase flex items-center justify-between">
+              Pending Updates
+              {Boolean(analytics.pendingRequestsCount && analytics.pendingRequestsCount > 0) && (
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping inline-block" />
+              )}
+            </span>
+            <p className="text-xl font-bold text-amber-400 mt-0.5">
+              {analytics.pendingRequestsCount || 0}
             </p>
           </div>
         </div>
@@ -1395,6 +1485,243 @@ export default function LeadVaultView() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* 6. Sub-Tab 5: Collaborative Update Requests */}
+      {activeSubTab === "requests" && (
+        <div className="space-y-4">
+          {/* Header Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <FileCheck className="w-4 h-4 text-emerald-400" />
+                <span>Collaborator Update Requests</span>
+              </h2>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                Review contact checklists, call notes, and status changes submitted from shared links.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Filter Pills */}
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-900 border border-zinc-800 text-xs">
+                {(["pending", "approved", "rejected", "all"] as const).map((filterKey) => (
+                  <button
+                    key={filterKey}
+                    onClick={() => {
+                      setRequestFilter(filterKey);
+                      loadRequests(filterKey);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg capitalize transition-colors cursor-pointer ${
+                      requestFilter === filterKey
+                        ? "bg-zinc-800 text-white font-semibold"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    {filterKey}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => loadRequests()}
+                disabled={loadingRequests}
+                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+                title="Refresh requests"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingRequests ? "animate-spin" : ""}`} />
+              </button>
+            </div>
+          </div>
+
+          {/* Requests Content */}
+          {loadingRequests ? (
+            <div className="p-12 text-center text-zinc-500 bg-zinc-950/60 border border-zinc-800 rounded-2xl">
+              <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-xs font-mono uppercase tracking-widest text-zinc-400">
+                Loading Update Requests...
+              </p>
+            </div>
+          ) : requests.length === 0 ? (
+            <div className="p-12 text-center text-zinc-500 bg-zinc-950/60 border border-zinc-800 rounded-2xl space-y-2">
+              <FileCheck className="w-10 h-10 mx-auto opacity-30 text-emerald-400" />
+              <p className="text-sm font-semibold text-zinc-300">
+                No {requestFilter === "all" ? "" : requestFilter} update requests found
+              </p>
+              <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+                {requestFilter === "pending"
+                  ? "All caught up! When recipients submit contact progress from shared links, they will show up here for your approval."
+                  : "No requests matching the selected filter."}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3">
+              {requests.map((req) => (
+                <div
+                  key={req.requestId}
+                  className="p-4 sm:p-5 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-700/80 transition-all shadow-sm space-y-3"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-zinc-900">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white font-bold text-xs">
+                        <Building className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-sm text-white">{req.companyName}</span>
+                          <span className="text-[10px] font-mono text-zinc-500">
+                            ({req.leadId})
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5">
+                          {req.contactPerson && (
+                            <span>Contact: <strong className="text-zinc-300">{req.contactPerson}</strong></span>
+                          )}
+                          {req.shareTitle && (
+                            <>
+                              <span>•</span>
+                              <span>Directory: <span className="text-purple-400">{req.shareTitle}</span></span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full border ${
+                          req.status === "pending"
+                            ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                            : req.status === "approved"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                            : "bg-red-500/10 text-red-400 border-red-500/30"
+                        }`}
+                      >
+                        {req.status === "pending" ? "● PENDING APPROVAL" : req.status.toUpperCase()}
+                      </span>
+                      <span className="text-[11px] font-mono text-zinc-500">
+                        {new Date(req.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Details Body */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 text-xs">
+                    {/* Submitter & Proposed Status */}
+                    <div className="p-3 rounded-xl bg-zinc-900/50 border border-zinc-800/60 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-500 font-mono text-[10px] uppercase">
+                          Submitted By
+                        </span>
+                        <span className="font-semibold text-zinc-200">
+                          {req.submittedBy}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-500 font-mono text-[10px] uppercase">
+                          Proposed Status
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-zinc-800 border border-zinc-700 text-white font-mono text-[11px] font-semibold capitalize">
+                          {req.proposedStatus}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Checklist Status */}
+                    <div className="p-3 rounded-xl bg-zinc-900/50 border border-zinc-800/60 space-y-1.5">
+                      <span className="text-zinc-500 font-mono text-[10px] uppercase block mb-1">
+                        Contact Activity Checklist
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+                            req.checklist.contacted
+                              ? "bg-green-500/10 text-green-400 border-green-500/20"
+                              : "bg-zinc-800 text-zinc-500 border-zinc-700"
+                          }`}
+                        >
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Contacted: {req.checklist.contacted ? "YES" : "NO"}</span>
+                        </span>
+
+                        {req.checklist.meetingScheduled && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                            <Clock className="w-3 h-3" />
+                            <span>Meeting Scheduled</span>
+                          </span>
+                        )}
+
+                        {req.checklist.followUpNeeded && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            <AlertTriangle className="w-3 h-3" />
+                            <span>Follow-up Needed</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Actions if pending */}
+                    <div className="p-3 rounded-xl bg-zinc-900/50 border border-zinc-800/60 flex items-center justify-center sm:justify-end gap-2">
+                      {req.status === "pending" ? (
+                        <>
+                          <button
+                            onClick={() => handleRequestAction(req.requestId, "reject")}
+                            disabled={actioningRequestId === req.requestId}
+                            className="px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white font-medium text-xs transition-colors cursor-pointer disabled:opacity-50"
+                          >
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => handleRequestAction(req.requestId, "approve")}
+                            disabled={actioningRequestId === req.requestId}
+                            className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5 shadow-sm"
+                          >
+                            {actioningRequestId === req.requestId ? (
+                              <>
+                                <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                <span>Applying...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Accept & Apply</span>
+                              </>
+                            )}
+                          </button>
+                        </>
+                      ) : (
+                        <div className="text-right text-[11px] text-zinc-500">
+                          {req.status === "approved" ? (
+                            <span className="text-emerald-400 font-medium">
+                              Approved and synced to lead record
+                            </span>
+                          ) : (
+                            <span className="text-red-400 font-medium">Rejected by admin</span>
+                          )}
+                          {req.reviewedBy && (
+                            <p className="text-[10px] text-zinc-600 mt-0.5 font-mono">
+                              by {req.reviewedBy}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Notes / Conversation Remarks */}
+                  {req.notes && (
+                    <div className="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800/80 text-xs text-zinc-300">
+                      <span className="text-zinc-500 font-mono text-[10px] uppercase block mb-1">
+                        Collaborator Call Notes & Remarks
+                      </span>
+                      <p className="whitespace-pre-wrap leading-relaxed">{req.notes}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
