@@ -11,10 +11,12 @@ import {
   ChevronRight,
   ChevronDown,
   Shield,
+  ShieldCheck,
   LogOut,
   FolderOpen,
   Sparkles,
   X,
+  Database,
 } from "lucide-react";
 import {
   Tooltip,
@@ -23,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export type AdminTab = "overview" | "media" | "maintenance" | "messages";
+export type AdminTab = "overview" | "media" | "maintenance" | "messages" | "leads";
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -37,6 +39,7 @@ interface AdminSidebarProps {
   maintenanceEnabled: boolean;
   adminEmail: string;
   onLogout: () => void;
+  leadsCount?: number;
 }
 
 export default function AdminSidebar({
@@ -51,6 +54,7 @@ export default function AdminSidebar({
   maintenanceEnabled,
   adminEmail,
   onLogout,
+  leadsCount = 0,
 }: AdminSidebarProps) {
   // Collapsible navigation groups state
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({
@@ -79,6 +83,14 @@ export default function AdminSidebar({
           icon: LayoutDashboard,
           badge: null,
           description: "System stats & quick actions",
+        },
+        {
+          id: "leads" as AdminTab,
+          label: "LeadVault",
+          icon: ShieldCheck,
+          badge: leadsCount > 0 ? `${leadsCount}` : "New",
+          badgeColor: "bg-green-500/10 text-green-400 border-green-500/30 font-semibold",
+          description: "Extract & secure business leads",
         },
       ],
     },

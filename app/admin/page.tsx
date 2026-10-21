@@ -12,6 +12,7 @@ import OverviewView from "@/components/admin/OverviewView";
 import MediaView from "@/components/admin/MediaView";
 import MessagesView from "@/components/admin/MessagesView";
 import MaintenanceConfigView from "@/components/admin/MaintenanceConfigView";
+import LeadVaultView from "@/components/admin/LeadVaultView";
 
 interface MediaItem {
   id: string;
@@ -47,7 +48,7 @@ function AdminDashboardContent() {
   // Determine active tab from URL query param if present
   const tabParam = searchParams.get("tab") as AdminTab | null;
   const initialTab: AdminTab =
-    tabParam && ["overview", "media", "messages", "maintenance"].includes(tabParam)
+    tabParam && ["overview", "leads", "media", "messages", "maintenance"].includes(tabParam)
       ? tabParam
       : "overview";
 
@@ -63,6 +64,7 @@ function AdminDashboardContent() {
   // Data states
   const [mediaList, setMediaList] = useState<MediaItem[]>([]);
   const [messagesList, setMessagesList] = useState<MessageItem[]>([]);
+  const [leadsCount, setLeadsCount] = useState<number>(0);
   const [maintenance, setMaintenance] = useState<MaintenanceConfig>({
     enabled: false,
     title: "Portfolio Under Maintenance",
@@ -84,7 +86,7 @@ function AdminDashboardContent() {
 
   // Keep state in sync if user clicks browser back/forward buttons
   useEffect(() => {
-    if (tabParam && ["overview", "media", "messages", "maintenance"].includes(tabParam)) {
+    if (tabParam && ["overview", "leads", "media", "messages", "maintenance"].includes(tabParam)) {
       setActiveTabState(tabParam);
     }
   }, [tabParam]);
@@ -105,6 +107,7 @@ function AdminDashboardContent() {
           loadMaintenance(),
           loadMedia(),
           loadMessages(),
+          loadLeadsCount(),
         ]);
       } catch (err) {
         console.error("Dashboard init error:", err);
@@ -153,11 +156,28 @@ function AdminDashboardContent() {
     }
   }
 
+  async function loadLeadsCount() {
+    try {
+      const res = await fetch("/api/admin/leads?limit=1");
+      if (res.ok) {
+        const data = await res.json();
+        setLeadsCount(data.pagination?.total || 0);
+      }
+    } catch (err) {
+      console.error("Load leads count error:", err);
+    }
+  }
+
   // Handle Refresh All Data
   async function handleRefreshAll() {
     setIsRefreshing(true);
     try {
-      await Promise.all([loadMaintenance(), loadMedia(), loadMessages()]);
+      await Promise.all([
+        loadMaintenance(),
+        loadMedia(),
+        loadMessages(),
+        loadLeadsCount(),
+      ]);
       playSuccessChime();
       toast.success("Dashboard data synchronized");
     } catch {
@@ -387,6 +407,7 @@ function AdminDashboardContent() {
         setMobileOpen={setMobileOpen}
         mediaCount={mediaList.length}
         unreadMessagesCount={unreadMessagesCount}
+        leadsCount={leadsCount}
         maintenanceEnabled={maintenance.enabled}
         adminEmail={adminEmail}
         onLogout={handleLogout}
@@ -434,6 +455,8 @@ function AdminDashboardContent() {
                   formatBytes={formatBytes}
                 />
               )}
+
+              {activeTab === "leads" && <LeadVaultView />}
 
               {activeTab === "media" && (
                 <MediaView

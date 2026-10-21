@@ -46,6 +46,7 @@ export default function AdminHeader({
 }: AdminHeaderProps) {
   const tabTitles: Record<AdminTab, { title: string; category: string }> = {
     overview: { title: "Dashboard Overview", category: "Core Workspace" },
+    leads: { title: "LeadVault Enterprise", category: "Core Workspace" },
     media: { title: "Media Library", category: "Content & Assets" },
     messages: { title: "Client Inquiries", category: "Communications" },
     maintenance: { title: "Maintenance Mode", category: "System & Config" },
