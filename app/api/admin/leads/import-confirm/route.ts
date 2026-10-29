@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/auth";
 import { getDatabase } from "@/lib/mongodb";
 import { normalizeLeadRecord } from "@/lib/lead-engine/normalizer";
-import { checkDuplicateInDb } from "@/lib/lead-engine/duplicateDetector";
+import { batchCheckDuplicates } from "@/lib/lead-engine/duplicateDetector";
 import { ILead } from "@/lib/lead-engine/types";
 import crypto from "crypto";
+
+const BATCH_SIZE = 100; // Process in batches of 100
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,6 +25,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate duplicateStrategy
+    if (!["skip", "update", "import_all"].includes(duplicateStrategy)) {
+      return NextResponse.json({ error: "Invalid duplicateStrategy" }, { status: 400 });
+    }
+
     const db = await getDatabase();
 
     // 1. Fetch staging rows for this batch
@@ -38,94 +45,154 @@ export async function POST(req: NextRequest) {
     const fileName = batchDoc?.fileName || "imported_file";
 
     const rawRows = staging.rows as Record<string, any>[];
-    const leadsToInsert: ILead[] = [];
 
     let insertedCount = 0;
     let updatedCount = 0;
     let skippedCount = 0;
     let duplicateCount = 0;
+    let invalidCount = 0;
 
-    for (const rawRow of rawRows) {
-      const normalized = normalizeLeadRecord(rawRow, columnMapping, fileName, batchId);
+    const errorReasons: Array<{ row: number; reason: string }> = [];
 
-      // Check if lead has at least some useful identifier
-      const hasContent =
-        normalized.companyName ||
-        normalized.contactPerson ||
-        normalized.email ||
-        normalized.phone;
+    // Process in batches to avoid large memory allocations and timeouts
+    for (let batchStart = 0; batchStart < rawRows.length; batchStart += BATCH_SIZE) {
+      const batchRows = rawRows.slice(batchStart, batchStart + BATCH_SIZE);
+      const normalizedBatch: Array<{
+        idx: number;
+        normalized: Record<string, any>;
+        valid: boolean;
+      }> = [];
 
-      if (!hasContent) {
-        skippedCount++;
-        continue;
-      }
+      // Normalize all rows in this batch
+      for (let i = 0; i < batchRows.length; i++) {
+        const rawRow = batchRows[i];
+        const globalIdx = batchStart + i + 1; // 1-indexed for error reporting
 
-      // Check for duplicate
-      const dupCheck = await checkDuplicateInDb(
-        db,
-        normalized.email,
-        normalized.phone,
-        normalized.companyName
-      );
+        const normalized = normalizeLeadRecord(rawRow, columnMapping, fileName, batchId);
 
-      if (dupCheck.isDuplicate) {
-        duplicateCount++;
+        const hasContent =
+          normalized.companyName ||
+          normalized.contactPerson ||
+          normalized.email ||
+          normalized.phone;
 
-        if (duplicateStrategy === "skip") {
+        if (!hasContent) {
+          invalidCount++;
           skippedCount++;
-          continue;
-        } else if (duplicateStrategy === "update" && dupCheck.duplicateOf) {
-          // Update existing lead record
-          await db.collection("leads").updateOne(
-            { leadId: dupCheck.duplicateOf },
-            {
-              $set: {
-                ...normalized,
-                updatedAt: new Date(),
-              },
-            }
-          );
-          updatedCount++;
+          errorReasons.push({ row: globalIdx, reason: "Empty row — no usable content" });
           continue;
         }
+
+        normalizedBatch.push({ idx: globalIdx, normalized, valid: true });
       }
 
-      // Prepare new lead
-      const leadId = `LV-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
-      const leadRecord: ILead = {
-        leadId,
-        companyName: normalized.companyName,
-        contactPerson: normalized.contactPerson,
-        email: normalized.email,
-        phone: normalized.phone,
-        website: normalized.website,
-        category: normalized.category,
-        city: normalized.city,
-        state: normalized.state,
-        country: normalized.country,
-        address: normalized.address,
-        source: fileName,
-        notes: normalized.notes,
-        customFields: normalized.customFields,
-        status: "new",
-        batchId,
-        listIds: [],
-        isDuplicate: dupCheck.isDuplicate,
-        duplicateOf: dupCheck.duplicateOf,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      if (normalizedBatch.length === 0) continue;
 
-      leadsToInsert.push(leadRecord);
-      insertedCount++;
+      // Batch duplicate check (3 bulk queries instead of N*3 individual queries)
+      const dupResults = await batchCheckDuplicates(
+        db,
+        normalizedBatch.map((n) => ({
+          email: n.normalized.email,
+          phone: n.normalized.phone,
+          companyName: n.normalized.companyName,
+        }))
+      );
+
+      const leadsToInsert: ILead[] = [];
+      const leadsToUpdate: Array<{ leadId: string; normalized: Record<string, any> }> = [];
+
+      for (let i = 0; i < normalizedBatch.length; i++) {
+        const { idx, normalized } = normalizedBatch[i];
+        const dupResult = dupResults.get(i) || { isDuplicate: false };
+
+        if (dupResult.isDuplicate) {
+          duplicateCount++;
+
+          if (duplicateStrategy === "skip") {
+            skippedCount++;
+            errorReasons.push({
+              row: idx,
+              reason: `Duplicate — matches existing record by ${dupResult.matchField}`,
+            });
+            continue;
+          } else if (duplicateStrategy === "update" && dupResult.duplicateOf) {
+            leadsToUpdate.push({ leadId: dupResult.duplicateOf, normalized });
+            updatedCount++;
+            continue;
+          }
+          // import_all falls through to insert
+        }
+
+        const leadId = `LV-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+        const leadRecord: ILead = {
+          leadId,
+          companyName: normalized.companyName,
+          contactPerson: normalized.contactPerson,
+          email: normalized.email,
+          phone: normalized.phone,
+          website: normalized.website,
+          category: normalized.category,
+          businessDescription: normalized.businessDescription || "",
+          city: normalized.city,
+          state: normalized.state,
+          country: normalized.country,
+          address: normalized.address,
+          source: fileName,
+          notes: normalized.notes,
+          internalNotes: normalized.internalNotes || "",
+          customFields: normalized.customFields,
+          contactStatus: "not_contacted",
+          status: "new",
+          followUpDate: null,
+          batchId,
+          listIds: [],
+          isDuplicate: dupResult.isDuplicate,
+          duplicateOf: dupResult.duplicateOf,
+          createdBy: admin.email,
+          updatedBy: admin.email,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        leadsToInsert.push(leadRecord);
+        insertedCount++;
+      }
+
+      // Bulk insert
+      if (leadsToInsert.length > 0) {
+        await db.collection("leads").insertMany(leadsToInsert as any);
+      }
+
+      // Bulk updates (still individual per record since we need specific leadIds)
+      if (leadsToUpdate.length > 0) {
+        const bulkOps = leadsToUpdate.map(({ leadId, normalized }) => ({
+          updateOne: {
+            filter: { leadId },
+            update: {
+              $set: {
+                companyName: normalized.companyName,
+                contactPerson: normalized.contactPerson,
+                email: normalized.email,
+                phone: normalized.phone,
+                website: normalized.website,
+                category: normalized.category,
+                businessDescription: normalized.businessDescription || "",
+                city: normalized.city,
+                state: normalized.state,
+                country: normalized.country,
+                address: normalized.address,
+                notes: normalized.notes,
+                updatedBy: admin.email,
+                updatedAt: new Date(),
+              },
+            },
+          },
+        }));
+        await db.collection("leads").bulkWrite(bulkOps);
+      }
     }
 
-    // 2. Bulk insert new leads if any
-    if (leadsToInsert.length > 0) {
-      await db.collection("leads").insertMany(leadsToInsert as any);
-    }
-
-    // 3. Update batch status
+    // Update batch status
     await db.collection("lead_batches").updateOne(
       { batchId },
       {
@@ -134,26 +201,30 @@ export async function POST(req: NextRequest) {
           extractedCount: insertedCount + updatedCount,
           duplicateCount,
           rejectedCount: skippedCount,
+          skippedCount,
           columnMapping,
           updatedAt: new Date(),
         },
       }
     );
 
-    // 4. Remove staging document
+    // Remove staging document
     await db.collection("lead_staging").deleteOne({ batchId });
 
-    // 5. Log audit event
+    // Audit log
     await db.collection("lead_audit_logs").insertOne({
       action: "batch_imported",
       performedBy: admin.email,
+      batchId,
       details: {
-        batchId,
         fileName,
         insertedCount,
         updatedCount,
         skippedCount,
         duplicateCount,
+        invalidCount,
+        totalProcessed: rawRows.length,
+        duplicateStrategy,
       },
       timestamp: new Date(),
     });
@@ -165,7 +236,11 @@ export async function POST(req: NextRequest) {
       updatedCount,
       skippedCount,
       duplicateCount,
+      invalidCount,
       totalProcessed: rawRows.length,
+      // Only return first 50 error reasons — full list available in audit logs
+      errorSummary: errorReasons.slice(0, 50),
+      hasMoreErrors: errorReasons.length > 50,
     });
   } catch (err: any) {
     console.error("Import confirmation error:", err);

@@ -1,7 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/auth";
 import { getDatabase } from "@/lib/mongodb";
+import { ILeadShare, PRIVATE_FIELDS } from "@/lib/lead-engine/types";
 import crypto from "crypto";
+
+// Fields the admin is allowed to update on a share via PATCH
+const SHARE_UPDATABLE_FIELDS = ["isRevoked", "expiresAt", "maxViews", "title", "description"] as const;
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ shareId: string }> }
+) {
+  try {
+    const admin = await getCurrentAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+    }
+
+    const { shareId } = await params;
+    const db = await getDatabase();
+    const share = await db.collection<ILeadShare>("lead_shares").findOne({ shareId });
+
+    if (!share) {
+      return NextResponse.json({ error: "Share not found" }, { status: 404 });
+    }
+
+    // Get lead count for this share
+    const leadCount =
+      share.leadIds && share.leadIds.length > 0
+        ? await db.collection("leads").countDocuments({ leadId: { $in: share.leadIds } })
+        : 0;
+
+    // Get audit trail for this share (last 20 events)
+    const auditLogs = await db
+      .collection("lead_audit_logs")
+      .find({ shareId })
+      .sort({ timestamp: -1 })
+      .limit(20)
+      .toArray();
+
+    return NextResponse.json({
+      share: {
+        ...share,
+        hasPassword: Boolean(share.passwordHash),
+        passwordHash: undefined,
+      },
+      leadCount,
+      auditLogs,
+    });
+  } catch (err: any) {
+    console.error("Get share detail error:", err);
+    return NextResponse.json({ error: "Failed to get share details." }, { status: 500 });
+  }
+}
 
 export async function PATCH(
   req: NextRequest,
@@ -15,20 +66,31 @@ export async function PATCH(
 
     const { shareId } = await params;
     const body = await req.json();
-    const { isRevoked, regenerateToken } = body;
 
     const db = await getDatabase();
-    const updateFields: Record<string, any> = {
-      updatedAt: new Date(),
-    };
+    const updateFields: Record<string, any> = { updatedAt: new Date() };
 
-    if (typeof isRevoked === "boolean") {
-      updateFields.isRevoked = isRevoked;
+    // Only allow specific fields to be updated
+    if (typeof body.isRevoked === "boolean") {
+      updateFields.isRevoked = body.isRevoked;
     }
-
-    if (regenerateToken) {
+    if (body.expiresAt !== undefined) {
+      updateFields.expiresAt = body.expiresAt ? new Date(body.expiresAt) : null;
+    }
+    if (typeof body.maxViews === "number" || body.maxViews === null) {
+      updateFields.maxViews = body.maxViews
+        ? Math.max(1, Math.min(100000, Number(body.maxViews)))
+        : null;
+    }
+    if (body.title && typeof body.title === "string") {
+      updateFields.title = body.title.trim().slice(0, 200);
+    }
+    if (body.description !== undefined) {
+      updateFields.description = String(body.description || "").trim().slice(0, 1000);
+    }
+    if (body.regenerateToken) {
       updateFields.token = crypto.randomBytes(32).toString("hex");
-      updateFields.isRevoked = false;
+      updateFields.viewCount = 0; // reset view count on token regeneration
     }
 
     const res = await db.collection("lead_shares").findOneAndUpdate(
@@ -42,10 +104,17 @@ export async function PATCH(
     }
 
     // Audit log
+    const action = body.isRevoked === true
+      ? "share_revoked"
+      : body.isRevoked === false
+      ? "share_reactivated"
+      : "share_updated";
+
     await db.collection("lead_audit_logs").insertOne({
-      action: regenerateToken ? "share_token_regenerated" : "share_revocation_toggled",
+      action,
       performedBy: admin.email,
-      details: { shareId, isRevoked, regenerateToken },
+      shareId,
+      details: { changedFields: Object.keys(updateFields).filter((k) => k !== "updatedAt") },
       timestamp: new Date(),
     });
 
@@ -60,14 +129,14 @@ export async function PATCH(
   } catch (err: any) {
     console.error("Update share error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to update share." },
+      { error: "Failed to update share." },
       { status: 500 }
     );
   }
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ shareId: string }> }
 ) {
   try {
@@ -78,17 +147,27 @@ export async function DELETE(
 
     const { shareId } = await params;
     const db = await getDatabase();
-    const res = await db.collection("lead_shares").deleteOne({ shareId });
+    const share = await db.collection("lead_shares").findOne({ shareId });
 
-    if (res.deletedCount === 0) {
+    if (!share) {
       return NextResponse.json({ error: "Share not found" }, { status: 404 });
     }
+
+    await db.collection("lead_shares").deleteOne({ shareId });
+
+    await db.collection("lead_audit_logs").insertOne({
+      action: "share_deleted",
+      performedBy: admin.email,
+      shareId,
+      details: { title: (share as any).title },
+      timestamp: new Date(),
+    });
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error("Delete share error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to delete share." },
+      { error: "Failed to delete share." },
       { status: 500 }
     );
   }

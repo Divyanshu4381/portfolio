@@ -11,85 +11,99 @@ export async function GET() {
     }
 
     const db = await getDatabase();
-    const leadsCollection = db.collection("leads");
-    const batchesCollection = db.collection("lead_batches");
-    const sharesCollection = db.collection("lead_shares");
+    const leadsCol = db.collection("leads");
+    const batchesCol = db.collection("lead_batches");
+    const sharesCol = db.collection("lead_shares");
+    const requestsCol = db.collection("lead_update_requests");
 
-    // Total leads
-    const totalLeads = await leadsCollection.countDocuments({});
-
-    // Leads added this month
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-
-    const leadsThisMonth = await leadsCollection.countDocuments({
-      createdAt: { $gte: startOfMonth },
-    });
-
-    // Batches stats
-    const totalBatches = await batchesCollection.countDocuments({});
-    const failedBatches = await batchesCollection.countDocuments({ status: "failed" });
-
-    // Duplicates count from batches
-    const duplicateAggregation = await batchesCollection
-      .aggregate([{ $group: { _id: null, totalDups: { $sum: "$duplicateCount" } } }])
-      .toArray();
-    const duplicatesDetected = duplicateAggregation[0]?.totalDups || 0;
-
-    // Shares stats
-    const activeRestrictedShares = await sharesCollection.countDocuments({
-      mode: "restricted",
-      isRevoked: false,
-    });
-
-    const publicPublishedShares = await sharesCollection.countDocuments({
-      mode: "public",
-      isRevoked: false,
-    });
-
-    // Status breakdown
-    const statusAgg = await leadsCollection
-      .aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }])
-      .toArray();
-
-    const statusBreakdown = {
-      new: 0,
-      reviewed: 0,
-      contacted: 0,
-      qualified: 0,
-      archived: 0,
-    };
-
-    statusAgg.forEach((item: any) => {
-      if (item._id && item._id in statusBreakdown) {
-        statusBreakdown[item._id as keyof typeof statusBreakdown] = item.count;
-      }
-    });
-
-    // Pending update requests count
-    const pendingRequestsCount = await db
-      .collection("lead_update_requests")
-      .countDocuments({ status: "pending" });
-
-    const analytics: ILeadAnalytics = {
+    // Run all aggregations in parallel
+    const [
       totalLeads,
       leadsThisMonth,
       totalBatches,
       failedBatches,
-      duplicatesDetected,
-      privateListsCount: Math.max(0, totalLeads - (activeRestrictedShares + publicPublishedShares)),
-      activeRestrictedShares,
-      publicPublishedShares,
+      duplicateAgg,
+      activeShares,
+      revokedShares,
       pendingRequestsCount,
-      statusBreakdown,
+      statusAgg,
+      contactStatusAgg,
+      hasWebsiteCount,
+      hasEmailCount,
+      hasPhoneCount,
+    ] = await Promise.all([
+      leadsCol.countDocuments({}),
+
+      leadsCol.countDocuments({
+        createdAt: { $gte: (() => { const d = new Date(); d.setDate(1); d.setHours(0,0,0,0); return d; })() },
+      }),
+
+      batchesCol.countDocuments({}),
+      batchesCol.countDocuments({ status: "failed" }),
+
+      batchesCol
+        .aggregate([{ $group: { _id: null, totalDups: { $sum: "$duplicateCount" } } }])
+        .toArray(),
+
+      sharesCol.countDocuments({ isRevoked: false }),
+      sharesCol.countDocuments({ isRevoked: true }),
+
+      requestsCol.countDocuments({ status: "pending" }),
+
+      leadsCol
+        .aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }])
+        .toArray(),
+
+      leadsCol
+        .aggregate([{ $group: { _id: "$contactStatus", count: { $sum: 1 } } }])
+        .toArray(),
+
+      // Has website: website field exists and is non-empty
+      leadsCol.countDocuments({ website: { $exists: true, $ne: "" } }),
+      // Has email
+      leadsCol.countDocuments({ email: { $exists: true, $ne: "" } }),
+      // Has phone
+      leadsCol.countDocuments({ phone: { $exists: true, $ne: "" } }),
+    ]);
+
+    // Build status breakdown
+    const statusBreakdown: Partial<Record<string, number>> = {};
+    statusAgg.forEach((item: any) => {
+      if (item._id) statusBreakdown[item._id] = item.count;
+    });
+
+    const contactStatusBreakdown: Partial<Record<string, number>> = {};
+    contactStatusAgg.forEach((item: any) => {
+      if (item._id) contactStatusBreakdown[item._id] = item.count;
+    });
+
+    const analytics: ILeadAnalytics = {
+      totalLeads,
+      leadsThisMonth,
+      leadsWithWebsite: hasWebsiteCount,
+      leadsWithoutWebsite: totalLeads - hasWebsiteCount,
+      leadsWithEmail: hasEmailCount,
+      leadsWithPhone: hasPhoneCount,
+      contactedLeads: (contactStatusBreakdown["contacted"] as number) || 0,
+      notContactedLeads: (contactStatusBreakdown["not_contacted"] as number) || 0,
+      interestedLeads: (statusBreakdown["interested"] as number) || 0,
+      followUpRequired: (statusBreakdown["follow_up"] as number) || 0,
+      convertedLeads: (statusBreakdown["converted"] as number) || 0,
+      totalBatches,
+      failedBatches,
+      duplicatesDetected: (duplicateAgg[0]?.totalDups as number) || 0,
+      activeShares,
+      revokedShares,
+      pendingRequestsCount,
+      statusBreakdown: statusBreakdown as any,
+      contactStatusBreakdown: contactStatusBreakdown as any,
     };
 
     return NextResponse.json({ analytics });
   } catch (err: any) {
     console.error("Fetch lead analytics error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to calculate analytics." },
+      { error: "Failed to calculate analytics." },
       { status: 500 }
     );
   }

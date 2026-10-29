@@ -2,15 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/auth";
 import { getDatabase } from "@/lib/mongodb";
 import { parseLeadFile } from "@/lib/lead-engine/fileParser";
-import { inferColumnMapping } from "@/lib/lead-engine/columnMatcher";
+import { inferColumnMapping, getMappingConfidence } from "@/lib/lead-engine/columnMatcher";
 import { normalizeLeadRecord } from "@/lib/lead-engine/normalizer";
-import { checkDuplicateInDb } from "@/lib/lead-engine/duplicateDetector";
+import { batchCheckDuplicates } from "@/lib/lead-engine/duplicateDetector";
 import { ILeadBatch } from "@/lib/lead-engine/types";
 import crypto from "crypto";
 
+const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
+
 export async function POST(req: NextRequest) {
   try {
-    // 1. Strict admin authentication check
+    // 1. Auth check
     const admin = await getCurrentAdmin();
     if (!admin) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
@@ -23,44 +25,79 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const fileName = file.name || "uploaded_leads_file";
-    const fileSize = file.size;
-
-    // 2. Parse file securely
-    const parsed = await parseLeadFile(buffer, fileName);
-    if (!parsed || parsed.rows.length === 0) {
+    if (file.size > MAX_FILE_SIZE_BYTES) {
       return NextResponse.json(
-        { error: "No records found or extractable in this file." },
+        { error: `File too large. Maximum allowed size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB.` },
         { status: 400 }
       );
     }
 
-    // 3. Infer column mappings
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const fileName = file.name || "uploaded_leads_file";
+    const fileSize = file.size;
+
+    // 2. Parse file
+    const parsed = await parseLeadFile(buffer, fileName);
+    if (!parsed || parsed.rows.length === 0) {
+      return NextResponse.json(
+        { error: "No records could be extracted from this file. Ensure it has structured rows with headers." },
+        { status: 400 }
+      );
+    }
+
+    // 3. Infer column mappings with the improved scorer
     const suggestedMapping = inferColumnMapping(parsed.headers);
+
+    // Add confidence metadata for UI display
+    const mappingWithConfidence: Record<string, { canonicalKey: string; confidence: string; sampleValues: string[] }> = {};
+    for (const header of parsed.headers) {
+      const canonicalKey = suggestedMapping[header] || "";
+      const confidence = getMappingConfidence(header, canonicalKey);
+      // Collect up to 3 non-empty sample values from first 20 rows
+      const sampleValues = parsed.rows
+        .slice(0, 20)
+        .map((row: any) => (row[header] != null ? String(row[header]).trim() : ""))
+        .filter((v: string) => v.length > 0)
+        .slice(0, 3);
+
+      mappingWithConfidence[header] = { canonicalKey, confidence, sampleValues };
+    }
 
     // 4. Check sample records for duplicates & preview
     const db = await getDatabase();
     const batchId = `BATCH-${Date.now()}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
 
-    let duplicateEstimate = 0;
     const previewCount = Math.min(parsed.rows.length, 10);
     const sampleRows = parsed.rows.slice(0, previewCount);
 
-    for (const row of sampleRows) {
-      const normalized = normalizeLeadRecord(row, suggestedMapping, fileName, batchId);
-      const dupCheck = await checkDuplicateInDb(
-        db,
-        normalized.email,
-        normalized.phone,
-        normalized.companyName
-      );
-      if (dupCheck.isDuplicate) {
-        duplicateEstimate++;
-      }
-    }
+    // Use batch duplicate check even for the preview
+    const normalizedSamples = sampleRows.map((row: any) =>
+      normalizeLeadRecord(row, suggestedMapping, fileName, batchId)
+    );
 
-    // 5. Store batch metadata in database
+    const dupResults = await batchCheckDuplicates(
+      db,
+      normalizedSamples.map((n: any) => ({
+        email: n.email,
+        phone: n.phone,
+        companyName: n.companyName,
+      }))
+    );
+
+    let duplicateEstimate = 0;
+    dupResults.forEach((r) => {
+      if (r.isDuplicate) duplicateEstimate++;
+    });
+
+    // Annotate preview rows with duplicate status
+    const annotatedPreview = sampleRows.map((row: any, i: number) => ({
+      ...row,
+      _isDuplicate: dupResults.get(i)?.isDuplicate || false,
+      _duplicateOf: dupResults.get(i)?.duplicateOf || null,
+      _matchField: dupResults.get(i)?.matchField || null,
+    }));
+
+    // 5. Store batch metadata
     const batchDoc: ILeadBatch = {
       batchId,
       fileName,
@@ -81,11 +118,13 @@ export async function POST(req: NextRequest) {
 
     await db.collection("lead_batches").insertOne(batchDoc);
 
-    // Also cache raw rows temporarily in a staging collection for confirmation
+    // Store full raw rows in staging collection for the confirm step
     await db.collection("lead_staging").insertOne({
       batchId,
       rows: parsed.rows,
       createdAt: new Date(),
+      // Staging docs auto-expire after 2 hours if not confirmed (set up TTL index)
+      expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000),
     });
 
     return NextResponse.json({
@@ -97,7 +136,8 @@ export async function POST(req: NextRequest) {
       totalRows: parsed.totalRows,
       headers: parsed.headers,
       suggestedMapping,
-      sampleRows,
+      mappingWithConfidence,
+      sampleRows: annotatedPreview,
       duplicateEstimate,
     });
   } catch (err: any) {

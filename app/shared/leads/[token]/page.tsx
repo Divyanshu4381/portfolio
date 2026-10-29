@@ -328,6 +328,7 @@ export default function SharedLeadViewerPage({ params }: SharedPageProps) {
                     {allowed.includes("category") && <th className="py-3 px-4">Industry</th>}
                     {allowed.includes("city") && <th className="py-3 px-4">Location</th>}
                     {allowed.includes("website") && <th className="py-3 px-4">Website</th>}
+                    {allowed.includes("status") && <th className="py-3 px-4">Status</th>}
                     <th className="py-3 px-4 text-right">Collaboration</th>
                   </tr>
                 </thead>
@@ -403,6 +404,13 @@ export default function SharedLeadViewerPage({ params }: SharedPageProps) {
                           ) : (
                             "—"
                           )}
+                        </td>
+                      )}
+                      {allowed.includes("status") && (
+                        <td className="py-3 px-4">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full uppercase font-bold border bg-zinc-900 border-zinc-700 text-zinc-300">
+                            {lead.status || "new"}
+                          </span>
                         </td>
                       )}
                       <td className="py-3 px-4 text-right">
